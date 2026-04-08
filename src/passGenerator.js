@@ -17,20 +17,119 @@ export class PassGenerator {
   }
 
   base64ToBuffer(base64String) {
+    const match = base64String.match(/^data:(image\/\w+);base64,/);
+    const mimeType = match ? match[1] : 'image/png';
     const base64Data = base64String.replace(/^data:image\/\w+;base64,/, '');
-    return Buffer.from(base64Data, 'base64');
+    return {
+      buffer: Buffer.from(base64Data, 'base64'),
+      mimeType
+    };
   }
 
-  async resizeImageIfNeeded(buffer, maxWidth, maxHeight) {
+  async convertAndScaleToPng(imageData, scaleFactor) {
+    const { buffer, mimeType } = imageData;
+    
+    // If already PNG and scale is 1.0, return as is
+    if (mimeType === 'image/png' && scaleFactor === 1.0) {
+      return buffer;
+    }
+    
     const tempPath = path.join(__dirname, '..', 'temp');
     await fs.mkdir(tempPath, { recursive: true });
     
-    const inputPath = path.join(tempPath, `input_${crypto.randomUUID()}.png`);
+    // Determine file extension based on MIME type
+    const extension = mimeType === 'image/jpeg' || mimeType === 'image/jpg' ? '.jpg' : '.png';
+    
+    const inputPath = path.join(tempPath, `input_${crypto.randomUUID()}${extension}`);
     const outputPath = path.join(tempPath, `output_${crypto.randomUUID()}.png`);
 
     try {
       await fs.writeFile(inputPath, buffer);
 
+      // Convert to PNG and scale
+      const scaleFilter = scaleFactor === 1.0 
+        ? '' 
+        : `-vf "scale=iw*${scaleFactor}:ih*${scaleFactor}"`;
+      await execAsync(`ffmpeg -i ${inputPath} ${scaleFilter} ${outputPath}`);
+
+      const outputBuffer = await fs.readFile(outputPath);
+
+      await fs.unlink(inputPath);
+      await fs.unlink(outputPath);
+
+      return outputBuffer;
+    } catch (error) {
+      console.error('Error converting/scaling image:', error);
+
+      try {
+        await fs.unlink(inputPath);
+      } catch (e) {}
+      try {
+        await fs.unlink(outputPath);
+      } catch (e) {}
+
+      throw error;
+    }
+  }
+
+  async convertToPngIfNeeded(imageData) {
+    const { buffer, mimeType } = imageData;
+    
+    // If already PNG, return as is
+    if (mimeType === 'image/png') {
+      return buffer;
+    }
+    
+    const tempPath = path.join(__dirname, '..', 'temp');
+    await fs.mkdir(tempPath, { recursive: true });
+    
+    // Determine file extension based on MIME type
+    const extension = mimeType === 'image/jpeg' || mimeType === 'image/jpg' ? '.jpg' : '.png';
+    
+    const inputPath = path.join(tempPath, `input_${crypto.randomUUID()}${extension}`);
+    const outputPath = path.join(tempPath, `output_${crypto.randomUUID()}.png`);
+
+    try {
+      await fs.writeFile(inputPath, buffer);
+
+      // Convert to PNG (no resizing)
+      await execAsync(`ffmpeg -i ${inputPath} ${outputPath}`);
+
+      const outputBuffer = await fs.readFile(outputPath);
+
+      await fs.unlink(inputPath);
+      await fs.unlink(outputPath);
+
+      return outputBuffer;
+    } catch (error) {
+      console.error('Error converting image to PNG:', error);
+
+      try {
+        await fs.unlink(inputPath);
+      } catch (e) {}
+      try {
+        await fs.unlink(outputPath);
+      } catch (e) {}
+
+      throw error;
+    }
+  }
+
+  async resizeImageIfNeeded(imageData, maxWidth, maxHeight) {
+    const { buffer, mimeType } = imageData;
+    const tempPath = path.join(__dirname, '..', 'temp');
+    await fs.mkdir(tempPath, { recursive: true });
+    
+    // Determine file extension based on MIME type
+    const extension = mimeType === 'image/jpeg' || mimeType === 'image/jpg' ? '.jpg' : '.png';
+    
+    const inputPath = path.join(tempPath, `input_${crypto.randomUUID()}${extension}`);
+    const outputPath = path.join(tempPath, `output_${crypto.randomUUID()}.png`);
+
+    try {
+      await fs.writeFile(inputPath, buffer);
+
+      // Convert to PNG and resize in one command (ffmpeg handles JPG to PNG conversion)
       await execAsync(`ffmpeg -i ${inputPath} -vf "scale='min(${maxWidth},iw)':'min(${maxHeight},ih)'" ${outputPath}`);
 
       const outputBuffer = await fs.readFile(outputPath);
@@ -40,7 +139,7 @@ export class PassGenerator {
 
       return outputBuffer;
     } catch (error) {
-      console.error('Error resizing image:', error);
+      console.error('Error resizing/converting image:', error);
 
       try {
         await fs.unlink(inputPath);
@@ -77,53 +176,65 @@ export class PassGenerator {
 
     // Add images if provided
     if (passData.images) {
-      if (passData.images.icon) {
-        const iconBuffer = this.base64ToBuffer(passData.images.icon);
-        const resizedIcon = await this.resizeImageIfNeeded(iconBuffer, 29, 29);
+      // Icon - generate 1x from 2x if needed
+      if (passData.images.icon2x) {
+        const icon2xData = this.base64ToBuffer(passData.images.icon2x);
+        const resizedIcon2x = await this.resizeImageIfNeeded(icon2xData, 58, 58);
+        pass.addBuffer('icon@2x.png', resizedIcon2x);
+        
+        // Generate 1x version from 2x
+        const icon1xData = this.base64ToBuffer(passData.images.icon2x);
+        const resizedIcon = await this.resizeImageIfNeeded(icon1xData, 29, 29);
         pass.addBuffer('icon.png', resizedIcon);
       }
-      if (passData.images.icon2x) {
-        const icon2xBuffer = this.base64ToBuffer(passData.images.icon2x);
-        const resizedIcon2x = await this.resizeImageIfNeeded(icon2xBuffer, 58, 58);
-        pass.addBuffer('icon@2x.png', resizedIcon2x);
-      }
-      if (passData.images.logo) {
-        const logoBuffer = this.base64ToBuffer(passData.images.logo);
-        const resizedLogo = await this.resizeImageIfNeeded(logoBuffer, 120, 120);
+      
+      // Logo - generate 1x from 2x if needed
+      if (passData.images.logo2x) {
+        const logo2xData = this.base64ToBuffer(passData.images.logo2x);
+        const resizedLogo2x = await this.resizeImageIfNeeded(logo2xData, 240, 240);
+        pass.addBuffer('logo@2x.png', resizedLogo2x);
+        
+        // Generate 1x version from 2x
+        const logo1xData = this.base64ToBuffer(passData.images.logo2x);
+        const resizedLogo = await this.resizeImageIfNeeded(logo1xData, 120, 120);
         pass.addBuffer('logo.png', resizedLogo);
       }
-      if (passData.images.logo2x) {
-        const logo2xBuffer = this.base64ToBuffer(passData.images.logo2x);
-        const resizedLogo2x = await this.resizeImageIfNeeded(logo2xBuffer, 240, 240);
-        pass.addBuffer('logo@2x.png', resizedLogo2x);
-      }
-      if (passData.images.background) {
-        const backgroundBuffer = this.base64ToBuffer(passData.images.background);
-        pass.addBuffer('background.png', backgroundBuffer);
-      }
+      
+      // Background - generate 1x from 2x if needed
       if (passData.images.background2x) {
-        const background2xBuffer = this.base64ToBuffer(passData.images.background2x);
-        pass.addBuffer('background@2x.png', background2xBuffer);
+        const background2xData = this.base64ToBuffer(passData.images.background2x);
+        // Convert to PNG and scale down by half
+        const pngBackground2x = await this.convertAndScaleToPng(background2xData, 0.5);
+        pass.addBuffer('background@2x.png', pngBackground2x);
+        
+        // Generate 1x version from 2x (scale down by half again)
+        const background1xData = this.base64ToBuffer(passData.images.background2x);
+        const pngBackground = await this.convertAndScaleToPng(background1xData, 0.25);
+        pass.addBuffer('background.png', pngBackground);
       }
-      if (passData.images.thumbnail) {
-        const thumbnailBuffer = this.base64ToBuffer(passData.images.thumbnail);
-        const resizedThumbnail = await this.resizeImageIfNeeded(thumbnailBuffer, 300, 300);
+      
+      // Thumbnail - generate 1x from 2x if needed
+      if (passData.images.thumbnail2x) {
+        const thumbnail2xData = this.base64ToBuffer(passData.images.thumbnail2x);
+        const resizedThumbnail2x = await this.resizeImageIfNeeded(thumbnail2xData, 600, 600);
+        pass.addBuffer('thumbnail@2x.png', resizedThumbnail2x);
+        
+        // Generate 1x version from 2x
+        const thumbnail1xData = this.base64ToBuffer(passData.images.thumbnail2x);
+        const resizedThumbnail = await this.resizeImageIfNeeded(thumbnail1xData, 300, 300);
         pass.addBuffer('thumbnail.png', resizedThumbnail);
       }
-      if (passData.images.thumbnail2x) {
-        const thumbnail2xBuffer = this.base64ToBuffer(passData.images.thumbnail2x);
-        const resizedThumbnail2x = await this.resizeImageIfNeeded(thumbnail2xBuffer, 600, 600);
-        pass.addBuffer('thumbnail@2x.png', resizedThumbnail2x);
-      }
-      if (passData.images.strip) {
-        const stripBuffer = this.base64ToBuffer(passData.images.strip);
-        const resizedStrip = await this.resizeImageIfNeeded(stripBuffer, 390, 123);
-        pass.addBuffer('strip.png', resizedStrip);
-      }
+      
+      // Strip - generate 1x from 2x if needed
       if (passData.images.strip2x) {
-        const strip2xBuffer = this.base64ToBuffer(passData.images.strip2x);
-        const resizedStrip2x = await this.resizeImageIfNeeded(strip2xBuffer, 780, 246);
+        const strip2xData = this.base64ToBuffer(passData.images.strip2x);
+        const resizedStrip2x = await this.resizeImageIfNeeded(strip2xData, 780, 246);
         pass.addBuffer('strip@2x.png', resizedStrip2x);
+        
+        // Generate 1x version from 2x
+        const strip1xData = this.base64ToBuffer(passData.images.strip2x);
+        const resizedStrip = await this.resizeImageIfNeeded(strip1xData, 390, 123);
+        pass.addBuffer('strip.png', resizedStrip);
       }
     }
 

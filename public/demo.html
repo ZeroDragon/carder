@@ -286,6 +286,19 @@
             margin-top: 20px;
             flex-wrap: wrap;
         }
+        .generator-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 30px;
+        }
+        .generator-left {
+            min-width: 0;
+        }
+        .generator-right {
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
 
         /* Pass Preview Styles */
         .pass-preview {
@@ -298,29 +311,7 @@
             margin-top: 0;
             margin-bottom: 15px;
         }
-        .pass-preview-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            justify-content: center;
-        }
-        .pass-preview-controls button {
-            padding: 8px 16px;
-            background: #e8e8ed;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .pass-preview-controls button:hover {
-            background: #d1d1d6;
-        }
-        .pass-preview-controls button.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
+
         .pass-card {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border-radius: 12px;
@@ -428,17 +419,11 @@
             font-size: 11px;
             color: rgba(255,255,255,0.5);
         }
-        .pass-back {
-            display: none;
-        }
-        .pass-back.active {
-            display: block;
-        }
         .pass-front {
             display: block;
         }
-        .pass-front.hidden {
-            display: none;
+        .pass-back {
+            display: block;
         }
         .pass-back-section {
             margin-bottom: 20px;
@@ -480,7 +465,21 @@
             font-size: 13px;
             padding: 20px 0;
         }
+        .pass-strip-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+        }
 
+        @media (max-width: 1024px) {
+            .generator-layout {
+                grid-template-columns: 1fr;
+            }
+            .generator-right {
+                position: static;
+            }
+        }
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -506,9 +505,10 @@
         </div>
 
         <!-- Generator Tab -->
-        <div id="generator" class="tab-content active">
-            <div class="section">
-                <h2>Configuración Básica</h2>
+            <div class="generator-layout">
+                <div class="generator-left">
+                    <div class="section">
+                        <h2>Configuración Básica</h2>
                 <div class="row">
                     <div class="form-group">
                         <label for="passType">Tipo de Pass *</label>
@@ -551,137 +551,112 @@
                 <h2>🎨 Colores</h2>
                 <div class="color-inputs">
                     <div class="color-input">
-                        <input type="color" id="backgroundColor" value="#1a1a2e" onchange="updateColorText(this)">
+                        <input type="color" id="backgroundColor" value="#1a1a2e" oninput="updateColorText(this)">
                         <input type="text" id="backgroundColorText" value="#1a1a2e" placeholder="#1a1a2e">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="foregroundColor" value="#ffffff" onchange="updateColorText(this)">
+                        <input type="color" id="foregroundColor" value="#ffffff" oninput="updateColorText(this)">
                         <input type="text" id="foregroundColorText" value="#ffffff" placeholder="#ffffff">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="labelColor" value="#e94560" onchange="updateColorText(this)">
+                        <input type="color" id="labelColor" value="#e94560" oninput="updateColorText(this)">
                         <input type="text" id="labelColorText" value="#e94560" placeholder="#e94560">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="stripColor" value="#667eea" onchange="updateColorText(this)">
+                        <input type="color" id="stripColor" value="#667eea" oninput="updateColorText(this)">
                         <input type="text" id="stripColorText" value="#667eea" placeholder="#667eea">
                     </div>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>🖼️ Imágenes</h2>
+                <div class="section">
+                    <h2>🖼️ Imágenes</h2>
 
-                <div class="row">
-                    <div class="form-group">
-                        <label for="iconImage">Icono (icon.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="iconImage" accept="image/png" onchange="handleImageUpload(this, 'iconImage')">
-                        <small>Máximo: 29x29</small>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="icon2xImage">Icono @2x <span class="badge badge-optional">Opcional</span></label>
+                            <input type="file" id="icon2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'icon2xImage')">
+                            <small>Se generará versión 1x automáticamente (máximo 58x58)</small>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="icon2xImage">Icono @2x (icon@2x.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="icon2xImage" accept="image/png" onchange="handleImageUpload(this, 'icon2xImage')">
-                        <small>Máximo: 58x58</small>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="logo2xImage">Logo @2x <span class="badge badge-optional">Opcional</span></label>
+                            <input type="file" id="logo2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'logo2xImage')">
+                            <small>Se generará versión 1x automáticamente (máximo 240x240)</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="logoImage">Logo (logo.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="logoImage" accept="image/png" onchange="handleImageUpload(this, 'logoImage')">
-                        <small>Máximo: 120x120</small>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="background2xImage">Fondo @2x <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
+                            <input type="file" id="background2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'background2xImage')">
+                            <small>Se generará versión 1x automáticamente</small>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="logo2xImage">Logo @2x (logo@2x.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="logo2xImage" accept="image/png" onchange="handleImageUpload(this, 'logo2xImage')">
-                        <small>Máximo: 240x240</small>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="thumbnail2xImage">Thumbnail @2x <span class="badge badge-optional">Opcional</span></label>
+                            <input type="file" id="thumbnail2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'thumbnail2xImage')">
+                            <small>Se generará versión 1x automáticamente (máximo 600x600)</small>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="backgroundImage">Fondo (background.png) <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="backgroundImage" accept="image/png" onchange="handleImageUpload(this, 'backgroundImage')">
-                        <small>Sin límite específico</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="background2xImage">Fondo @2x (background@2x.png) <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="background2xImage" accept="image/png" onchange="handleImageUpload(this, 'background2xImage')">
-                        <small>Sin límite específico</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="thumbnailImage">Thumbnail (thumbnail.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="thumbnailImage" accept="image/png" onchange="handleImageUpload(this, 'thumbnailImage')">
-                        <small>Máximo: 300x300</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="thumbnail2xImage">Thumbnail @2x (thumbnail@2x.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="thumbnail2xImage" accept="image/png" onchange="handleImageUpload(this, 'thumbnail2xImage')">
-                        <small>Máximo: 600x600</small>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="strip2xImage">Strip @2x <span class="badge badge-optional">Opcional</span></label>
+                            <input type="file" id="strip2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'strip2xImage')">
+                            <small>Se generará versión 1x automáticamente (máximo 780x246)</small>
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label for="stripImage">Strip (strip.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="stripImage" accept="image/png" onchange="handleImageUpload(this, 'stripImage')">
-                        <small>Máximo: 390x123</small>
-                    </div>
-                    <div class="form-group">
-                        <label for="strip2xImage">Strip @2x (strip@2x.png) <span class="badge badge-optional">Opcional</span></label>
-                        <input type="file" id="strip2xImage" accept="image/png" onchange="handleImageUpload(this, 'strip2xImage')">
-                        <small>Máximo: 780x246</small>
-                    </div>
-                </div>
-            </div>
 
-            <div class="section">
-                <h2>📊 Campos del Frente</h2>
+                    <div class="section">
+                        <h2>📊 Campos del Frente</h2>
 
                 <!-- Primary Fields -->
                 <div class="fields-container">
-                    <h3>Primary Fields <span class="badge">Requerido</span> <small>El campo más grande y visible</small></h3>
+                    <h3>Primary Fields <span class="badge">Requerido</span> <small>El campo más grande y visible(PNG/JPG)</small></h3>
                     <div id="primaryFields"></div>
                     <button class="btn btn-add" onclick="addField('primaryFields')">+ Agregar Campo Primary</button>
                 </div>
 
                 <!-- Secondary Fields -->
                 <div class="fields-container">
-                    <h3>Secondary Fields <span class="badge-optional">Opcional</span> <small>Campos secundarios debajo del primary</small></h3>
+                    <h3>Secondary Fields <span class="badge-optional">Opcional</span> <small>Campos secundarios debajo del primary(PNG/JPG)</small></h3>
                     <div id="secondaryFields"></div>
                     <button class="btn btn-add" onclick="addField('secondaryFields')">+ Agregar Campo Secondary</button>
                 </div>
 
                 <!-- Auxiliary Fields -->
                 <div class="fields-container">
-                    <h3>Auxiliary Fields <span class="badge-optional">Opcional</span> <small>Información adicional</small></h3>
+                    <h3>Auxiliary Fields <span class="badge-optional">Opcional</span> <small>Información adicional(PNG/JPG)</small></h3>
                     <div id="auxiliaryFields"></div>
                     <button class="btn btn-add" onclick="addField('auxiliaryFields')">+ Agregar Campo Auxiliary</button>
                 </div>
 
                 <!-- Header Fields -->
                 <div class="fields-container">
-                    <h3>Header Fields <span class="badge-optional">Opcional</span> <small>Información en el encabezado superior</small></h3>
+                    <h3>Header Fields <span class="badge-optional">Opcional</span> <small>Información en el encabezado superior(PNG/JPG)</small></h3>
                     <div id="headerFields"></div>
                     <button class="btn btn-add" onclick="addField('headerFields')">+ Agregar Campo Header</button>
                 </div>
 
                 <!-- Back Fields -->
                 <div class="fields-container">
-                    <h3>Back Fields <span class="badge-optional">Opcional</span> <small>Información visible al girar el pass</small></h3>
+                    <h3>Back Fields <span class="badge-optional">Opcional</span> <small>Información visible al girar el pass(PNG/JPG)</small></h3>
                     <div id="backFields"></div>
                     <button class="btn btn-add" onclick="addField('backFields')">+ Agregar Campo Back</button>
                 </div>
 
                 <!-- Additional Info Fields (iOS 18+) -->
                 <div class="fields-container" id="additionalInfoFieldsContainer" style="display: none;">
-                    <h3>Additional Info Fields <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> <small>Solo para Event Tickets</small></h3>
+                    <h3>Additional Info Fields <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> <small>Solo para Event Tickets(PNG/JPG)</small></h3>
                     <div id="additionalInfoFields"></div>
                     <button class="btn btn-add" onclick="addField('additionalInfoFields')">+ Agregar Campo Additional Info</button>
                 </div>
             </div>
 
-            <div class="section">
-                <h2>📱 Código de Barras</h2>
+                    <div class="section">
+                        <h2>📱 Código de Barras</h2>
                 <div class="row">
                     <div class="form-group">
                         <label for="barcodeFormat">Formato *</label>
@@ -703,8 +678,8 @@
                 </div>
             </div>
 
-            <div class="section">
-                <h2>⚙️ Configuración Adicional</h2>
+                    <div class="section">
+                        <h2>⚙️ Configuración Adicional</h2>
                 <div class="row">
                     <div class="form-group">
                         <label for="expirationDate">Fecha de Expiración</label>
@@ -721,15 +696,26 @@
                 </div>
             </div>
 
-            <div class="pass-preview">
-                <h3>👁️ Live Preview</h3>
-                <div class="pass-preview-controls">
-                    <button id="frontViewBtn" class="active" onclick="switchPassView('front')">🎴 Frente</button>
-                    <button id="backViewBtn" onclick="switchPassView('back')">📄 Atrás</button>
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="generatePass()">🚀 Generar Pass</button>
+                    <button class="btn btn-success" onclick="previewJSON()">👁️ Previsualizar JSON</button>
+                    <button class="btn" onclick="resetForm()">🔄 Resetear Formulario</button>
                 </div>
-                <div class="pass-card" id="passCard">
-                    <!-- Front View -->
-                    <div class="pass-front" id="passFront">
+
+                <div id="status" class="status"></div>
+
+                <div id="preview" class="preview" style="display: none;">
+                    <h3>📄 JSON del Pass</h3>
+                    <div id="jsonPreview" class="json-preview"></div>
+                </div>
+            </div>
+
+            <div class="generator-right">
+                <div class="pass-preview">
+                    <h3>👁️ Live Preview - Frente</h3>
+                    <div class="pass-card" id="passCardFront">
+                        <!-- Front View -->
+                        <div class="pass-front" id="passFront">
                         <div class="pass-header">
                             <div class="pass-logo" id="previewLogo">🎫</div>
                             <div class="pass-logo-text" id="previewLogoText">LOGO</div>
@@ -753,32 +739,26 @@
                         </div>
                         <div class="pass-footer" id="previewFooter">Mi Organización</div>
                     </div>
-                    <!-- Back View -->
-                    <div class="pass-back" id="passBack">
-                        <div class="pass-header">
-                            <div class="pass-logo" id="previewBackLogo">🎫</div>
-                            <div class="pass-logo-text" id="previewBackLogoText">LOGO</div>
-                        </div>
-                        <div id="previewBackFields">
-                            <div class="pass-back-empty">
-                                Agrega campos "Back Fields" para ver información aquí
+                    </div>
+                </div>
+                
+                <div class="pass-preview" style="margin-top: 20px;">
+                    <h3>👁️ Live Preview - Atrás</h3>
+                    <div class="pass-card" id="passCardBack">
+                        <!-- Back View -->
+                        <div class="pass-back" id="passBack">
+                            <div class="pass-header">
+                                <div class="pass-logo" id="previewBackLogo">🎫</div>
+                                <div class="pass-logo-text" id="previewBackLogoText">LOGO</div>
+                            </div>
+                            <div id="previewBackFields">
+                                <div class="pass-back-empty">
+                                    Agrega campos "Back Fields" para ver información aquí
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="actions">
-                <button class="btn btn-primary" onclick="generatePass()">🚀 Generar Pass</button>
-                <button class="btn btn-success" onclick="previewJSON()">👁️ Previsualizar JSON</button>
-                <button class="btn" onclick="resetForm()">🔄 Resetear Formulario</button>
-            </div>
-
-            <div id="status" class="status"></div>
-
-            <div id="preview" class="preview" style="display: none;">
-                <h3>📄 JSON del Pass</h3>
-                <div id="jsonPreview" class="json-preview"></div>
             </div>
         </div>
 
@@ -859,20 +839,15 @@
                 </ul>
 
                 <h3>🖼️ Imágenes</h3>
-                <p>Las imágenes deben estar en formato PNG. Apple Wallet requiere ciertos tamaños para óptima visualización:</p>
+                <p>Solo necesitas proporcionar las versiones @2x (alta resolución). El sistema generará automáticamente las versiones 1x redimensionando. Las imágenes pueden estar en formato PNG o JPG/JPEG:</p>
                 <ul>
-                    <li><strong>icon.png</strong> <span class="badge">Requerido</span> - Icono del pass (máximo 29x29)</li>
-                    <li><strong>icon@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 58x58)</li>
-                    <li><strong>logo.png</strong> <span class="badge-optional">Opcional</span> - Logo en el centro superior (máximo 120x120)</li>
-                    <li><strong>logo@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 240x240)</li>
-                    <li><strong>background.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Imagen de fondo completa para Event Tickets</li>
-                    <li><strong>background@2x.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Versión retina</li>
-                    <li><strong>thumbnail.png</strong> <span class="badge-optional">Opcional</span> - Miniatura para boarding passes y event tickets (máximo 300x300)</li>
-                    <li><strong>thumbnail@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 600x600)</li>
-                    <li><strong>strip.png</strong> <span class="badge-optional">Opcional</span> - Imagen de fondo en la parte superior (máximo 390x123)</li>
-                    <li><strong>strip@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 780x246)</li>
+                    <li><strong>icon@2x.png</strong> <span class="badge">Requerido</span> - Icono del pass (máximo 58x58, se genera versión 1x de 29x29)</li>
+                    <li><strong>logo@2x.png</strong> <span class="badge-optional">Opcional</span> - Logo en el centro superior (máximo 240x240, se genera versión 1x de 120x120)</li>
+                    <li><strong>background@2x.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Imagen de fondo completa (se genera versión 1x escalada)</li>
+                    <li><strong>thumbnail@2x.png</strong> <span class="badge-optional">Opcional</span> - Miniatura para boarding passes y event tickets (máximo 600x600, se genera versión 1x de 300x300)</li>
+                    <li><strong>strip@2x.png</strong> <span class="badge-optional">Opcional</span> - Imagen de fondo en la parte superior (máximo 780x246, se genera versión 1x de 390x123)</li>
                 </ul>
-                <p><strong>Nota:</strong> El sistema redimensionará automáticamente las imágenes si exceden el tamaño máximo permitido, manteniendo la proporción.</p>
+                <p><strong>Nota:</strong> El sistema redimensionará y convertirá automáticamente las imágenes JPG a PNG si es necesario, manteniendo la proporción. Las versiones 1x se generan automáticamente a partir de las versiones @2x.</p>
 
                 <h3>📱 Códigos de Barras</h3>
                 <h4>Formatos Disponibles:</h4>
@@ -1024,8 +999,7 @@ a.click();
                 <div class="json-preview" style="margin-top: 20px;">
 <pre>
 // Ejemplo con imágenes (en base64)
-const imageBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANS...'; // Tu imagen en base64
-const image2xBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANS...'; // Tu imagen @2x en base64
+const image2xBase64 = 'data:image/jpeg;base64,iVBORw0KGgoAAAANS...'; // Tu imagen @2x en base64 (puede ser JPG)
 
 const response = await fetch('http://localhost:3000/pass', {
   method: 'POST',
@@ -1039,11 +1013,8 @@ const response = await fetch('http://localhost:3000/pass', {
     backgroundColor: '#1a1a2e',
     foregroundColor: '#ffffff',
     images: {
-      icon: imageBase64,
       icon2x: image2xBase64,
-      background: imageBase64,
       background2x: image2xBase64,
-      thumbnail: imageBase64,
       thumbnail2x: image2xBase64
     },
     primaryFields: [{
@@ -1059,6 +1030,9 @@ const response = await fetch('http://localhost:3000/pass', {
   })
 });
 </pre>
+                </div>
+                <div class="info">
+                    <strong>Nota sobre imágenes:</strong> Solo necesitas proporcionar las imágenes @2x (alta resolución). El backend generará automáticamente las versiones 1x redimensionando. Las imágenes pueden estar en formato PNG o JPG/JPEG, el sistema convertirá automáticamente si es necesario.
                 </div>
             </div>
 
@@ -1101,12 +1075,14 @@ const response = await fetch('http://localhost:3000/pass', {
             const file = input.files[0];
             if (!file) {
                 delete uploadedImages[imageKey];
+                updateLivePreview();
                 return;
             }
 
             const reader = new FileReader();
             reader.onload = function(e) {
                 uploadedImages[imageKey] = e.target.result;
+                updateLivePreview();
             };
             reader.readAsDataURL(file);
         }
@@ -1128,7 +1104,8 @@ const response = await fetch('http://localhost:3000/pass', {
 
         // Actualizar live preview
         function updateLivePreview() {
-            const passCard = document.getElementById('passCard');
+            const passCardFront = document.getElementById('passCardFront');
+            const passCardBack = document.getElementById('passCardBack');
             const logoText = document.getElementById('logoText').value || 'LOGO';
             const backgroundColor = document.getElementById('backgroundColorText').value || '#1a1a2e';
             const foregroundColor = document.getElementById('foregroundColorText').value || '#ffffff';
@@ -1136,8 +1113,55 @@ const response = await fetch('http://localhost:3000/pass', {
             const barcodeFormat = document.getElementById('barcodeFormat').value;
             const barcodeMessage = document.getElementById('barcodeMessage').value || '';
 
-            // Update colors
-            passCard.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${adjustColor(backgroundColor, -20)} 100%)`;
+            // Update colors for both cards
+            const backgroundGradient = `linear-gradient(135deg, ${backgroundColor} 0%, ${adjustColor(backgroundColor, -20)} 100%)`;
+            if (passCardFront) passCardFront.style.background = backgroundGradient;
+            if (passCardBack) passCardBack.style.background = backgroundGradient;
+
+            // Update logo images (front and back)
+            const logoFrontEl = document.getElementById('previewLogo');
+            const logoBackEl = document.getElementById('previewBackLogo');
+            
+            if (uploadedImages.logo2xImage) {
+                logoFrontEl.style.backgroundImage = `url(${uploadedImages.logo2xImage})`;
+                logoFrontEl.style.backgroundSize = 'contain';
+                logoFrontEl.style.backgroundPosition = 'center';
+                logoFrontEl.style.backgroundRepeat = 'no-repeat';
+                logoFrontEl.textContent = '';
+                
+                logoBackEl.style.backgroundImage = `url(${uploadedImages.logo2xImage})`;
+                logoBackEl.style.backgroundSize = 'contain';
+                logoBackEl.style.backgroundPosition = 'center';
+                logoBackEl.style.backgroundRepeat = 'no-repeat';
+                logoBackEl.textContent = '';
+            } else {
+                logoFrontEl.style.backgroundImage = 'none';
+                logoFrontEl.textContent = '🎫';
+                logoBackEl.style.backgroundImage = 'none';
+                logoBackEl.textContent = '🎫';
+            }
+
+            // Update strip images if uploaded
+            const stripFrontEl = document.getElementById('previewStripFront');
+            const stripBackEl = document.getElementById('previewStripBack');
+            
+            if (uploadedImages.strip2xImage && passCardFront) {
+                // Check if strip element exists, if not create it
+                if (!stripFrontEl) {
+                    const stripEl = document.createElement('div');
+                    stripEl.id = 'previewStripFront';
+                    stripEl.className = 'pass-strip-preview';
+                    passCardFront.insertBefore(stripEl, passCardFront.firstChild);
+                }
+                
+                const stripEl = document.getElementById('previewStripFront');
+                stripEl.style.backgroundImage = `url(${uploadedImages.strip2xImage})`;
+                stripEl.style.backgroundSize = 'cover';
+                stripEl.style.backgroundPosition = 'center';
+                stripEl.style.display = 'block';
+            } else if (stripFrontEl) {
+                stripFrontEl.style.display = 'none';
+            }
 
             // Update logo text (front and back)
             document.getElementById('previewLogoText').textContent = logoText;
@@ -1209,26 +1233,6 @@ const response = await fetch('http://localhost:3000/pass', {
             });
         }
 
-        // Switch between front and back view
-        function switchPassView(view) {
-            const frontView = document.getElementById('passFront');
-            const backView = document.getElementById('passBack');
-            const frontBtn = document.getElementById('frontViewBtn');
-            const backBtn = document.getElementById('backViewBtn');
-
-            if (view === 'front') {
-                frontView.classList.remove('hidden');
-                backView.classList.remove('active');
-                frontBtn.classList.add('active');
-                backBtn.classList.remove('active');
-            } else {
-                frontView.classList.add('hidden');
-                backView.classList.add('active');
-                frontBtn.classList.remove('active');
-                backBtn.classList.add('active');
-            }
-        }
-
         // Adjust color brightness
         function adjustColor(color, amount) {
             const hex = color.replace('#', '');
@@ -1256,7 +1260,7 @@ const response = await fetch('http://localhost:3000/pass', {
             });
 
             // Also add listener for color inputs
-            const colorInputs = ['backgroundColor', 'foregroundColor', 'labelColor'];
+            const colorInputs = ['backgroundColor', 'foregroundColor', 'labelColor', 'stripColor'];
             colorInputs.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) {
@@ -1291,6 +1295,7 @@ const response = await fetch('http://localhost:3000/pass', {
         function updateColorText(colorInput) {
             const textInput = document.getElementById(colorInput.id + 'Text');
             textInput.value = colorInput.value;
+            updateLivePreview();
         }
 
         // Agregar campo
@@ -1461,15 +1466,10 @@ const response = await fetch('http://localhost:3000/pass', {
             // Agregar imágenes
             if (Object.keys(uploadedImages).length > 0) {
                 data.images = {};
-                if (uploadedImages.iconImage) data.images.icon = uploadedImages.iconImage;
                 if (uploadedImages.icon2xImage) data.images.icon2x = uploadedImages.icon2xImage;
-                if (uploadedImages.logoImage) data.images.logo = uploadedImages.logoImage;
                 if (uploadedImages.logo2xImage) data.images.logo2x = uploadedImages.logo2xImage;
-                if (uploadedImages.backgroundImage) data.images.background = uploadedImages.backgroundImage;
                 if (uploadedImages.background2xImage) data.images.background2x = uploadedImages.background2xImage;
-                if (uploadedImages.thumbnailImage) data.images.thumbnail = uploadedImages.thumbnailImage;
                 if (uploadedImages.thumbnail2xImage) data.images.thumbnail2x = uploadedImages.thumbnail2xImage;
-                if (uploadedImages.stripImage) data.images.strip = uploadedImages.stripImage;
                 if (uploadedImages.strip2xImage) data.images.strip2x = uploadedImages.strip2xImage;
             }
 
@@ -1551,15 +1551,10 @@ const response = await fetch('http://localhost:3000/pass', {
             document.getElementById('stripColorText').value = '#667eea';
 
             // Resetear imágenes
-            document.getElementById('iconImage').value = '';
             document.getElementById('icon2xImage').value = '';
-            document.getElementById('logoImage').value = '';
             document.getElementById('logo2xImage').value = '';
-            document.getElementById('backgroundImage').value = '';
             document.getElementById('background2xImage').value = '';
-            document.getElementById('thumbnailImage').value = '';
             document.getElementById('thumbnail2xImage').value = '';
-            document.getElementById('stripImage').value = '';
             document.getElementById('strip2xImage').value = '';
             uploadedImages = {};
 
