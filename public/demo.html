@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apple Wallet Pass Generator - Demo Completo</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
         * {
             margin: 0;
@@ -278,7 +279,7 @@
             background: #f45c43;
         }
         .badge-optional {
-            background: #6c757d;
+            background: #28a745;
         }
         .actions {
             display: flex;
@@ -494,25 +495,25 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <div id="app" class="container">
         <h1>🎫 Apple Wallet Pass Generator</h1>
         <p class="subtitle">Generador interactivo de passes para Apple Wallet con documentación completa</p>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('generator')">⚡ Generador</button>
-            <button class="tab" onclick="switchTab('docs')">📖 Documentación</button>
-            <button class="tab" onclick="switchTab('api')">🔌 API</button>
+            <button class="tab" :class="{ active: activeTab === 'generator' }" @click="activeTab = 'generator'">⚡ Generador</button>
+            <button class="tab" :class="{ active: activeTab === 'docs' }" @click="activeTab = 'docs'">📖 Documentación</button>
+            <button class="tab" :class="{ active: activeTab === 'api' }" @click="activeTab = 'api'">🔌 API</button>
         </div>
 
         <!-- Generator Tab -->
-            <div class="generator-layout">
+        <div v-show="activeTab === 'generator'" class="generator-layout">
                 <div class="generator-left">
                     <div class="section">
                         <h2>Configuración Básica</h2>
                 <div class="row">
                     <div class="form-group">
                         <label for="passType">Tipo de Pass *</label>
-                        <select id="passType" onchange="updatePassType()">
+                        <select id="passType" v-model="passType">
                             <option value="generic">📄 Generic (Genérico)</option>
                             <option value="eventTicket">🎫 Event Ticket (Boleto de Evento)</option>
                             <option value="boardingPass">✈️ Boarding Pass (Pase de Abordar)</option>
@@ -520,9 +521,9 @@
                             <option value="storeCard">💳 Store Card (Tarjeta de Tienda)</option>
                         </select>
                     </div>
-                    <div class="form-group" id="transitTypeGroup" style="display: none;">
+                    <div class="form-group" v-show="showTransitType">
                         <label for="transitType">Tipo de Transporte *</label>
-                        <select id="transitType">
+                        <select id="transitType" v-model="transitType">
                             <option value="PKTransitTypeAir">✈️ Aire (Avión)</option>
                             <option value="PKTransitTypeBoat">⛵ Barco</option>
                             <option value="PKTransitTypeBus">🚌 Autobús</option>
@@ -534,16 +535,16 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="description">Descripción *</label>
-                        <input type="text" id="description" placeholder="Mi Pass Personalizado">
+                        <input type="text" id="description" v-model="description" placeholder="Mi Pass Personalizado">
                     </div>
                     <div class="form-group">
                         <label for="organizationName">Organización *</label>
-                        <input type="text" id="organizationName" placeholder="Mi Empresa">
+                        <input type="text" id="organizationName" v-model="organizationName" placeholder="Mi Empresa">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="logoText">Texto del Logo</label>
-                    <input type="text" id="logoText" placeholder="LOGO">
+                    <input type="text" id="logoText" v-model="logoText" placeholder="LOGO">
                 </div>
             </div>
 
@@ -551,20 +552,20 @@
                 <h2>🎨 Colores</h2>
                 <div class="color-inputs">
                     <div class="color-input">
-                        <input type="color" id="backgroundColor" value="#1a1a2e" oninput="updateColorText(this)">
-                        <input type="text" id="backgroundColorText" value="#1a1a2e" placeholder="#1a1a2e">
+                        <input type="color" v-model="backgroundColor">
+                        <input type="text" v-model="backgroundColor" placeholder="#1a1a2e">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="foregroundColor" value="#ffffff" oninput="updateColorText(this)">
-                        <input type="text" id="foregroundColorText" value="#ffffff" placeholder="#ffffff">
+                        <input type="color" v-model="foregroundColor">
+                        <input type="text" v-model="foregroundColor" placeholder="#ffffff">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="labelColor" value="#e94560" oninput="updateColorText(this)">
-                        <input type="text" id="labelColorText" value="#e94560" placeholder="#e94560">
+                        <input type="color" v-model="labelColor">
+                        <input type="text" v-model="labelColor" placeholder="#e94560">
                     </div>
                     <div class="color-input">
-                        <input type="color" id="stripColor" value="#667eea" oninput="updateColorText(this)">
-                        <input type="text" id="stripColorText" value="#667eea" placeholder="#667eea">
+                        <input type="color" v-model="stripColor">
+                        <input type="text" v-model="stripColor" placeholder="#667eea">
                     </div>
                 </div>
             </div>
@@ -575,35 +576,35 @@
                     <div class="row">
                         <div class="form-group">
                             <label for="icon2xImage">Icono @2x <span class="badge badge-optional">Opcional</span></label>
-                            <input type="file" id="icon2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'icon2xImage')">
+                            <input type="file" id="icon2xImage" accept="image/png,image/jpeg,image/jpg" @change="handleImageUpload($event, 'icon2xImage')">
                             <small>Se generará versión 1x automáticamente (máximo 58x58)</small>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label for="logo2xImage">Logo @2x <span class="badge badge-optional">Opcional</span></label>
-                            <input type="file" id="logo2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'logo2xImage')">
+                            <input type="file" id="logo2xImage" accept="image/png,image/jpeg,image/jpg" @change="handleImageUpload($event, 'logo2xImage')">
                             <small>Se generará versión 1x automáticamente (máximo 240x240)</small>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label for="background2xImage">Fondo @2x <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
-                            <input type="file" id="background2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'background2xImage')">
+                            <input type="file" id="background2xImage" accept="image/png,image/jpeg,image/jpg" @change="handleImageUpload($event, 'background2xImage')">
                             <small>Se generará versión 1x automáticamente</small>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label for="thumbnail2xImage">Thumbnail @2x <span class="badge badge-optional">Opcional</span></label>
-                            <input type="file" id="thumbnail2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'thumbnail2xImage')">
+                            <input type="file" id="thumbnail2xImage" accept="image/png,image/jpeg,image/jpg" @change="handleImageUpload($event, 'thumbnail2xImage')">
                             <small>Se generará versión 1x automáticamente (máximo 600x600)</small>
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label for="strip2xImage">Strip @2x <span class="badge badge-optional">Opcional</span></label>
-                            <input type="file" id="strip2xImage" accept="image/png,image/jpeg,image/jpg" onchange="handleImageUpload(this, 'strip2xImage')">
+                            <input type="file" id="strip2xImage" accept="image/png,image/jpeg,image/jpg" @change="handleImageUpload($event, 'strip2xImage')">
                             <small>Se generará versión 1x automáticamente (máximo 780x246)</small>
                         </div>
                     </div>
@@ -614,44 +615,290 @@
 
                 <!-- Primary Fields -->
                 <div class="fields-container">
-                    <h3>Primary Fields <span class="badge">Requerido</span> <small>El campo más grande y visible(PNG/JPG)</small></h3>
-                    <div id="primaryFields"></div>
-                    <button class="btn btn-add" onclick="addField('primaryFields')">+ Agregar Campo Primary</button>
+                    <h3>Primary Fields <span class="badge">Requerido</span> <small>El campo más grande y visible</small></h3>
+                    <div v-for="field in primaryFields" :key="field.id" :id="'primaryFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('primaryFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('primaryFields')">+ Agregar Campo Primary</button>
                 </div>
 
                 <!-- Secondary Fields -->
                 <div class="fields-container">
-                    <h3>Secondary Fields <span class="badge-optional">Opcional</span> <small>Campos secundarios debajo del primary(PNG/JPG)</small></h3>
-                    <div id="secondaryFields"></div>
-                    <button class="btn btn-add" onclick="addField('secondaryFields')">+ Agregar Campo Secondary</button>
+                    <h3>Secondary Fields <span class="badge badge-optional">Opcional</span> <small>Campos secundarios debajo del primary</small></h3>
+                    <div v-for="field in secondaryFields" :key="field.id" :id="'secondaryFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('secondaryFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('secondaryFields')">+ Agregar Campo Secondary</button>
                 </div>
 
                 <!-- Auxiliary Fields -->
                 <div class="fields-container">
-                    <h3>Auxiliary Fields <span class="badge-optional">Opcional</span> <small>Información adicional(PNG/JPG)</small></h3>
-                    <div id="auxiliaryFields"></div>
-                    <button class="btn btn-add" onclick="addField('auxiliaryFields')">+ Agregar Campo Auxiliary</button>
+                    <h3>Auxiliary Fields <span class="badge badge-optional">Opcional</span> <small>Información adicional</small></h3>
+                    <div v-for="field in auxiliaryFields" :key="field.id" :id="'auxiliaryFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('auxiliaryFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('auxiliaryFields')">+ Agregar Campo Auxiliary</button>
                 </div>
 
                 <!-- Header Fields -->
                 <div class="fields-container">
-                    <h3>Header Fields <span class="badge-optional">Opcional</span> <small>Información en el encabezado superior(PNG/JPG)</small></h3>
-                    <div id="headerFields"></div>
-                    <button class="btn btn-add" onclick="addField('headerFields')">+ Agregar Campo Header</button>
+                    <h3>Header Fields <span class="badge badge-optional">Opcional</span> <small>Información en el encabezado superior</small></h3>
+                    <div v-for="field in headerFields" :key="field.id" :id="'headerFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('headerFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('headerFields')">+ Agregar Campo Header</button>
                 </div>
 
                 <!-- Back Fields -->
                 <div class="fields-container">
-                    <h3>Back Fields <span class="badge-optional">Opcional</span> <small>Información visible al girar el pass(PNG/JPG)</small></h3>
-                    <div id="backFields"></div>
-                    <button class="btn btn-add" onclick="addField('backFields')">+ Agregar Campo Back</button>
+                    <h3>Back Fields <span class="badge badge-optional">Opcional</span> <small>Información visible al girar el pass</small></h3>
+                    <div v-for="field in backFields" :key="field.id" :id="'backFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('backFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('backFields')">+ Agregar Campo Back</button>
                 </div>
 
                 <!-- Additional Info Fields (iOS 18+) -->
-                <div class="fields-container" id="additionalInfoFieldsContainer" style="display: none;">
-                    <h3>Additional Info Fields <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> <small>Solo para Event Tickets(PNG/JPG)</small></h3>
-                    <div id="additionalInfoFields"></div>
-                    <button class="btn btn-add" onclick="addField('additionalInfoFields')">+ Agregar Campo Additional Info</button>
+                <div class="fields-container" v-show="showAdditionalInfoFields">
+                    <h3>Additional Info Fields <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> <small>Solo para Event Tickets</small></h3>
+                    <div v-for="field in additionalInfoFields" :key="field.id" :id="'additionalInfoFields_' + field.id" class="field-entry">
+                        <div class="field-header">
+                            <span class="field-number">{{ field.id }}</span>
+                            <button class="btn btn-danger" @click="removeField('additionalInfoFields', field.id)">✕</button>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Key *</label>
+                                <input type="text" v-model="field.key" placeholder="identificador_unico">
+                            </div>
+                            <div class="form-group">
+                                <label>Label *</label>
+                                <input type="text" v-model="field.label" placeholder="Etiqueta">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Value *</label>
+                                <input type="text" v-model="field.value" placeholder="Valor del campo">
+                            </div>
+                            <div class="form-group">
+                                <label>Attributed Value</label>
+                                <input type="text" v-model="field.attributedValue" placeholder="Valor formateado">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label>Change Message</label>
+                                <input type="text" v-model="field.changeMessage" placeholder="Actualizado a %@">
+                            </div>
+                            <div class="form-group">
+                                <label>Data Detectors</label>
+                                <select v-model="field.dataDetectorTypes">
+                                    <option value="">Ninguno</option>
+                                    <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                                    <option value="PKDataDetectorTypeLink">Link</option>
+                                    <option value="PKDataDetectorTypeAddress">Dirección</option>
+                                    <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-add" @click="addField('additionalInfoFields')">+ Agregar Campo Additional Info</button>
                 </div>
             </div>
 
@@ -660,7 +907,7 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="barcodeFormat">Formato *</label>
-                        <select id="barcodeFormat">
+                        <select id="barcodeFormat" v-model="barcodeFormat">
                             <option value="PKBarcodeFormatQR">QR Code</option>
                             <option value="PKBarcodeFormatPDF417">PDF417</option>
                             <option value="PKBarcodeFormatAztec">Aztec</option>
@@ -669,11 +916,11 @@
                     </div>
                     <div class="form-group">
                         <label for="barcodeMessage">Mensaje/Código *</label>
-                        <input type="text" id="barcodeMessage" placeholder="https://ejemplo.com/ticket/12345">
+                        <input type="text" id="barcodeMessage" v-model="barcodeMessage" placeholder="https://ejemplo.com/ticket/12345">
                     </div>
                     <div class="form-group">
                         <label for="barcodeAltText">Texto Alternativo</label>
-                        <input type="text" id="barcodeAltText" placeholder="12345">
+                        <input type="text" id="barcodeAltText" v-model="barcodeAltText" placeholder="12345">
                     </div>
                 </div>
             </div>
@@ -683,23 +930,23 @@
                 <div class="row">
                     <div class="form-group">
                         <label for="expirationDate">Fecha de Expiración</label>
-                        <input type="datetime-local" id="expirationDate">
+                        <input type="datetime-local" id="expirationDate" v-model="expirationDate">
                     </div>
                     <div class="form-group">
                         <label for="relevantDate">Fecha Relevante</label>
-                        <input type="datetime-local" id="relevantDate">
+                        <input type="datetime-local" id="relevantDate" v-model="relevantDate">
                     </div>
                     <div class="form-group">
                         <label for="groupingIdentifier">Identificador de Agrupación</label>
-                        <input type="text" id="groupingIdentifier" placeholder="passes-mis-eventos">
+                        <input type="text" id="groupingIdentifier" v-model="groupingIdentifier" placeholder="passes-mis-eventos">
                     </div>
                 </div>
             </div>
 
                 <div class="actions">
-                    <button class="btn btn-primary" onclick="generatePass()">🚀 Generar Pass</button>
-                    <button class="btn btn-success" onclick="previewJSON()">👁️ Previsualizar JSON</button>
-                    <button class="btn" onclick="resetForm()">🔄 Resetear Formulario</button>
+                    <button class="btn btn-primary" @click="generatePass">🚀 Generar Pass</button>
+                    <button class="btn btn-success" @click="previewJSON">👁️ Previsualizar JSON</button>
+                    <button class="btn" @click="resetForm">🔄 Resetear Formulario</button>
                 </div>
 
                 <div id="status" class="status"></div>
@@ -713,47 +960,48 @@
             <div class="generator-right">
                 <div class="pass-preview">
                     <h3>👁️ Live Preview - Frente</h3>
-                    <div class="pass-card" id="passCardFront">
+                    <div class="pass-card" id="passCardFront" :style="{ background: backgroundGradient }">
                         <!-- Front View -->
                         <div class="pass-front" id="passFront">
+                            <div v-if="hasStripImage" class="pass-strip-preview" :style="{ backgroundImage: 'url(' + stripImageUrl + ')', backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
                         <div class="pass-header">
-                            <div class="pass-logo" id="previewLogo">🎫</div>
-                            <div class="pass-logo-text" id="previewLogoText">LOGO</div>
+                            <div class="pass-logo" id="previewLogo" :style="hasLogoImage ? { backgroundImage: 'url(' + logoImageUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : {}">{{ hasLogoImage ? '' : '🎫' }}</div>
+                            <div class="pass-logo-text" id="previewLogoText" :style="{ color: foregroundColor }">{{ logoText || 'LOGO' }}</div>
                         </div>
                         <div class="pass-primary">
-                            <div class="pass-primary-label" id="previewPrimaryLabel">TÍTULO</div>
-                            <div class="pass-primary-value" id="previewPrimaryValue">Ejemplo de Pass</div>
+                            <div class="pass-primary-label" id="previewPrimaryLabel" :style="{ color: adjustedLabelColor }">{{ primaryFields[0]?.label || 'TÍTULO' }}</div>
+                            <div class="pass-primary-value" id="previewPrimaryValue" :style="{ color: foregroundColor }">{{ primaryFields[0]?.value || 'Ejemplo de Pass' }}</div>
                         </div>
                         <div class="pass-secondary">
-                            <div class="pass-secondary-field">
-                                <div class="pass-secondary-label">Secundario</div>
-                                <div class="pass-secondary-value" id="previewSecondary1Value">Info</div>
-                            </div>
-                            <div class="pass-secondary-field">
-                                <div class="pass-secondary-label">Estado</div>
-                                <div class="pass-secondary-value" id="previewSecondary2Value">Activo</div>
+                            <div v-for="(field, index) in secondaryFields.slice(0, 2)" :key="field.id" class="pass-secondary-field">
+                                <div class="pass-secondary-label" :style="{ color: adjustedLabelColor }">{{ field.label || (index === 0 ? 'Secundario' : 'Estado') }}</div>
+                                <div class="pass-secondary-value" :style="{ color: foregroundColor }">{{ field.value || (index === 0 ? 'Info' : 'Activo') }}</div>
                             </div>
                         </div>
                         <div class="pass-barcode">
-                            <div class="pass-barcode-placeholder" id="previewBarcode">QR CODE</div>
+                            <div class="pass-barcode-placeholder" id="previewBarcode">{{ displayBarcodeText }}</div>
                         </div>
-                        <div class="pass-footer" id="previewFooter">Mi Organización</div>
+                        <div class="pass-footer" id="previewFooter" :style="{ color: foregroundColor }">{{ displayOrganizationName }}</div>
                     </div>
                     </div>
                 </div>
                 
                 <div class="pass-preview" style="margin-top: 20px;">
                     <h3>👁️ Live Preview - Atrás</h3>
-                    <div class="pass-card" id="passCardBack">
+                    <div class="pass-card" id="passCardBack" :style="{ background: backgroundGradient }">
                         <!-- Back View -->
                         <div class="pass-back" id="passBack">
                             <div class="pass-header">
-                                <div class="pass-logo" id="previewBackLogo">🎫</div>
-                                <div class="pass-logo-text" id="previewBackLogoText">LOGO</div>
+                                <div class="pass-logo" id="previewBackLogo" :style="hasLogoImage ? { backgroundImage: 'url(' + logoImageUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : {}">{{ hasLogoImage ? '' : '🎫' }}</div>
+                                <div class="pass-logo-text" id="previewBackLogoText" :style="{ color: foregroundColor }">{{ logoText || 'LOGO' }}</div>
                             </div>
                             <div id="previewBackFields">
-                                <div class="pass-back-empty">
+                                <div v-if="backFields.length === 0" class="pass-back-empty" :style="{ color: adjustedLabelColor }">
                                     Agrega campos "Back Fields" para ver información aquí
+                                </div>
+                                <div v-for="field in backFields" :key="field.id" class="pass-back-field">
+                                    <div class="pass-back-label" :style="{ color: adjustedLabelColor }">{{ field.label || 'Campo' }}</div>
+                                    <div class="pass-back-value" :style="{ color: foregroundColor }">{{ field.value || 'Valor' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -763,7 +1011,7 @@
         </div>
 
         <!-- Documentation Tab -->
-        <div id="docs" class="tab-content">
+        <div v-show="activeTab === 'docs'" class="tab-content">
             <div class="documentation">
                 <h2>📖 Documentación Completa de Apple Wallet Passes</h2>
 
@@ -797,26 +1045,26 @@
                     <li><strong>dataDetectorTypes</strong> - Tipos de datos detectables (phone, link, address, calendar)</li>
                 </ul>
 
-                <h4>2. Secondary Fields <span class="badge-optional">Opcional</span></h4>
+                <h4>2. Secondary Fields <span class="badge badge-optional">Opcional</span></h4>
                 <p>Campos secundarios que aparecen debajo del primary field.</p>
                 <ul>
                     <li>Mismas propiedades que <code>Primary Fields</code></li>
                 </ul>
 
-                <h4>3. Auxiliary Fields <span class="badge-optional">Opcional</span></h4>
+                <h4>3. Auxiliary Fields <span class="badge badge-optional">Opcional</span></h4>
                 <p>Campos auxiliares con información adicional.</p>
                 <ul>
                     <li>Mismas propiedades que <code>Primary Fields</code></li>
                     <li><strong>row</strong> - Número de fila (0 o 1) para event tickets</li>
                 </ul>
 
-                <h4>4. Header Fields <span class="badge-optional">Opcional</span></h4>
+                <h4>4. Header Fields <span class="badge badge-optional">Opcional</span></h4>
                 <p>Campos que aparecen en el encabezado superior del pass.</p>
                 <ul>
                     <li>Mismas propiedades que <code>Primary Fields</code></li>
                 </ul>
 
-                <h4>5. Back Fields <span class="badge-optional">Opcional</span></h4>
+                <h4>5. Back Fields <span class="badge badge-optional">Opcional</span></h4>
                 <p>Campos visibles al girar el pass (parte trasera).</p>
                 <ul>
                     <li>Mismas propiedades que <code>Primary Fields</code></li>
@@ -842,10 +1090,10 @@
                 <p>Solo necesitas proporcionar las versiones @2x (alta resolución). El sistema generará automáticamente las versiones 1x redimensionando. Las imágenes pueden estar en formato PNG o JPG/JPEG:</p>
                 <ul>
                     <li><strong>icon@2x.png</strong> <span class="badge">Requerido</span> - Icono del pass (máximo 58x58, se genera versión 1x de 29x29)</li>
-                    <li><strong>logo@2x.png</strong> <span class="badge-optional">Opcional</span> - Logo en el centro superior (máximo 240x240, se genera versión 1x de 120x120)</li>
+                    <li><strong>logo@2x.png</strong> <span class="badge badge-optional">Opcional</span> - Logo en el centro superior (máximo 240x240, se genera versión 1x de 120x120)</li>
                     <li><strong>background@2x.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Imagen de fondo completa (se genera versión 1x escalada)</li>
-                    <li><strong>thumbnail@2x.png</strong> <span class="badge-optional">Opcional</span> - Miniatura para boarding passes y event tickets (máximo 600x600, se genera versión 1x de 300x300)</li>
-                    <li><strong>strip@2x.png</strong> <span class="badge-optional">Opcional</span> - Imagen de fondo en la parte superior (máximo 780x246, se genera versión 1x de 390x123)</li>
+                    <li><strong>thumbnail@2x.png</strong> <span class="badge badge-optional">Opcional</span> - Miniatura para boarding passes y event tickets (máximo 600x600, se genera versión 1x de 300x300)</li>
+                    <li><strong>strip@2x.png</strong> <span class="badge badge-optional">Opcional</span> - Imagen de fondo en la parte superior (máximo 780x246, se genera versión 1x de 390x123)</li>
                 </ul>
                 <p><strong>Nota:</strong> El sistema redimensionará y convertirá automáticamente las imágenes JPG a PNG si es necesario, manteniendo la proporción. Las versiones 1x se generan automáticamente a partir de las versiones @2x.</p>
 
@@ -937,7 +1185,7 @@
         </div>
 
         <!-- API Tab -->
-        <div id="api" class="tab-content">
+        <div v-show="activeTab === 'api'" class="tab-content">
             <div class="section">
                 <h2>🔌 API Endpoints</h2>
                 <div class="documentation">
@@ -1059,524 +1307,302 @@ const response = await fetch('http://localhost:3000/pass', {
     </div>
 
     <script>
-        let fieldCounter = {
-            primaryFields: 0,
-            secondaryFields: 0,
-            auxiliaryFields: 0,
-            headerFields: 0,
-            backFields: 0,
-            additionalInfoFields: 0
-        };
+        // Vue App handles all reactivity and functionality
+        const { createApp } = Vue;
 
-        let uploadedImages = {};
-
-        // Manejar carga de imágenes
-        function handleImageUpload(input, imageKey) {
-            const file = input.files[0];
-            if (!file) {
-                delete uploadedImages[imageKey];
-                updateLivePreview();
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                uploadedImages[imageKey] = e.target.result;
-                updateLivePreview();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Inicializar con algunos campos de ejemplo
-        function initializeExampleFields() {
-            addField('primaryFields', {
-                key: 'primary_example',
-                label: 'Título Principal',
-                value: 'Ejemplo de Pass'
-            });
-            addField('secondaryFields', {
-                key: 'sec_example',
-                label: 'Secundario',
-                value: 'Información'
-            });
-            updateLivePreview();
-        }
-
-        // Actualizar live preview
-        function updateLivePreview() {
-            const passCardFront = document.getElementById('passCardFront');
-            const passCardBack = document.getElementById('passCardBack');
-            const logoText = document.getElementById('logoText').value || 'LOGO';
-            const backgroundColor = document.getElementById('backgroundColorText').value || '#1a1a2e';
-            const foregroundColor = document.getElementById('foregroundColorText').value || '#ffffff';
-            const organizationName = document.getElementById('organizationName').value || 'Mi Organización';
-            const barcodeFormat = document.getElementById('barcodeFormat').value;
-            const barcodeMessage = document.getElementById('barcodeMessage').value || '';
-
-            // Update colors for both cards
-            const backgroundGradient = `linear-gradient(135deg, ${backgroundColor} 0%, ${adjustColor(backgroundColor, -20)} 100%)`;
-            if (passCardFront) passCardFront.style.background = backgroundGradient;
-            if (passCardBack) passCardBack.style.background = backgroundGradient;
-
-            // Update logo images (front and back)
-            const logoFrontEl = document.getElementById('previewLogo');
-            const logoBackEl = document.getElementById('previewBackLogo');
-            
-            if (uploadedImages.logo2xImage) {
-                logoFrontEl.style.backgroundImage = `url(${uploadedImages.logo2xImage})`;
-                logoFrontEl.style.backgroundSize = 'contain';
-                logoFrontEl.style.backgroundPosition = 'center';
-                logoFrontEl.style.backgroundRepeat = 'no-repeat';
-                logoFrontEl.textContent = '';
-                
-                logoBackEl.style.backgroundImage = `url(${uploadedImages.logo2xImage})`;
-                logoBackEl.style.backgroundSize = 'contain';
-                logoBackEl.style.backgroundPosition = 'center';
-                logoBackEl.style.backgroundRepeat = 'no-repeat';
-                logoBackEl.textContent = '';
-            } else {
-                logoFrontEl.style.backgroundImage = 'none';
-                logoFrontEl.textContent = '🎫';
-                logoBackEl.style.backgroundImage = 'none';
-                logoBackEl.textContent = '🎫';
-            }
-
-            // Update strip images if uploaded
-            const stripFrontEl = document.getElementById('previewStripFront');
-            const stripBackEl = document.getElementById('previewStripBack');
-            
-            if (uploadedImages.strip2xImage && passCardFront) {
-                // Check if strip element exists, if not create it
-                if (!stripFrontEl) {
-                    const stripEl = document.createElement('div');
-                    stripEl.id = 'previewStripFront';
-                    stripEl.className = 'pass-strip-preview';
-                    passCardFront.insertBefore(stripEl, passCardFront.firstChild);
-                }
-                
-                const stripEl = document.getElementById('previewStripFront');
-                stripEl.style.backgroundImage = `url(${uploadedImages.strip2xImage})`;
-                stripEl.style.backgroundSize = 'cover';
-                stripEl.style.backgroundPosition = 'center';
-                stripEl.style.display = 'block';
-            } else if (stripFrontEl) {
-                stripFrontEl.style.display = 'none';
-            }
-
-            // Update logo text (front and back)
-            document.getElementById('previewLogoText').textContent = logoText;
-            document.getElementById('previewLogoText').style.color = foregroundColor;
-            document.getElementById('previewBackLogoText').textContent = logoText;
-            document.getElementById('previewBackLogoText').style.color = foregroundColor;
-
-            // Update primary field
-            const primaryFields = collectFields('primaryFields');
-            if (primaryFields.length > 0) {
-                document.getElementById('previewPrimaryLabel').textContent = primaryFields[0].label || 'TÍTULO';
-                document.getElementById('previewPrimaryValue').textContent = primaryFields[0].value || 'Ejemplo';
-                document.getElementById('previewPrimaryValue').style.color = foregroundColor;
-            }
-
-            // Update secondary fields
-            const secondaryFields = collectFields('secondaryFields');
-            const secondaryElements = document.querySelectorAll('.pass-secondary-field');
-            secondaryElements.forEach((el, index) => {
-                if (secondaryFields[index]) {
-                    el.querySelector('.pass-secondary-label').textContent = secondaryFields[index].label || 'Campo';
-                    el.querySelector('.pass-secondary-value').textContent = secondaryFields[index].value || 'Valor';
-                    el.querySelector('.pass-secondary-value').style.color = foregroundColor;
-                }
-            });
-
-            // Update barcode
-            let barcodeText = 'QR CODE';
-            if (barcodeFormat === 'PKBarcodeFormatQR') barcodeText = 'QR CODE';
-            else if (barcodeFormat === 'PKBarcodeFormatPDF417') barcodeText = 'PDF417';
-            else if (barcodeFormat === 'PKBarcodeFormatAztec') barcodeText = 'AZTEC';
-            else if (barcodeFormat === 'PKBarcodeFormatCode128') barcodeText = 'CODE 128';
-            document.getElementById('previewBarcode').textContent = barcodeMessage ? barcodeText : barcodeText;
-
-            // Update footer
-            document.getElementById('previewFooter').textContent = organizationName;
-            document.getElementById('previewFooter').style.color = foregroundColor;
-
-            // Update labels color
-            document.querySelectorAll('.pass-secondary-label').forEach(el => {
-                el.style.color = adjustColor(foregroundColor, -40);
-            });
-            document.getElementById('previewPrimaryLabel').style.color = adjustColor(foregroundColor, -40);
-
-            // Update back fields
-            const backFields = collectFields('backFields');
-            const previewBackFields = document.getElementById('previewBackFields');
-
-            if (backFields.length === 0) {
-                previewBackFields.innerHTML = '<div class="pass-back-empty">Agrega campos "Back Fields" para ver información aquí</div>';
-            } else {
-                previewBackFields.innerHTML = backFields.map(field => `
-                    <div class="pass-back-field">
-                        <div class="pass-back-label">${field.label || 'Campo'}</div>
-                        <div class="pass-back-value">${field.value || 'Valor'}</div>
-                    </div>
-                `).join('');
-            }
-
-            // Update back labels color
-            document.querySelectorAll('.pass-back-label').forEach(el => {
-                el.style.color = adjustColor(foregroundColor, -40);
-            });
-            document.querySelectorAll('.pass-back-value').forEach(el => {
-                el.style.color = foregroundColor;
-            });
-            document.querySelectorAll('.pass-back-empty').forEach(el => {
-                el.style.color = adjustColor(foregroundColor, -40);
-            });
-        }
-
-        // Adjust color brightness
-        function adjustColor(color, amount) {
-            const hex = color.replace('#', '');
-            const num = parseInt(hex, 16);
-            const r = Math.min(255, Math.max(0, (num >> 16) + amount));
-            const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-            const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
-            return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
-        }
-
-        // Add event listeners for live preview
-        function addPreviewListeners() {
-            const inputs = [
-                'description', 'organizationName', 'logoText',
-                'backgroundColorText', 'foregroundColorText', 'labelColorText',
-                'barcodeFormat', 'barcodeMessage'
-            ];
-
-            inputs.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', updateLivePreview);
-                    element.addEventListener('change', updateLivePreview);
-                }
-            });
-
-            // Also add listener for color inputs
-            const colorInputs = ['backgroundColor', 'foregroundColor', 'labelColor', 'stripColor'];
-            colorInputs.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('input', updateLivePreview);
-                }
-            });
-        }
-
-        // Cambiar entre tabs
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-        }
-
-        // Actualizar tipo de pass
-        function updatePassType() {
-            const passType = document.getElementById('passType').value;
-            const transitTypeGroup = document.getElementById('transitTypeGroup');
-            const additionalInfoFieldsContainer = document.getElementById('additionalInfoFieldsContainer');
-
-            // Mostrar/ocultar transit type
-            transitTypeGroup.style.display = passType === 'boardingPass' ? 'block' : 'none';
-
-            // Mostrar/ocultar additional info fields (solo event ticket)
-            additionalInfoFieldsContainer.style.display = passType === 'eventTicket' ? 'block' : 'none';
-        }
-
-        // Actualizar texto de color
-        function updateColorText(colorInput) {
-            const textInput = document.getElementById(colorInput.id + 'Text');
-            textInput.value = colorInput.value;
-            updateLivePreview();
-        }
-
-        // Agregar campo
-        function addField(containerId, presetData = null) {
-            const container = document.getElementById(containerId);
-            const fieldNumber = ++fieldCounter[containerId];
-
-            const fieldDiv = document.createElement('div');
-            fieldDiv.className = 'field-entry';
-            fieldDiv.id = `${containerId}_${fieldNumber}`;
-
-            const labelText = presetData?.label || `Campo ${fieldNumber}`;
-            const valueText = presetData?.value || 'Valor';
-            const keyText = presetData?.key || `field_${containerId}_${fieldNumber}`;
-
-            fieldDiv.innerHTML = `
-                <div class="field-header">
-                    <span class="field-number">${fieldNumber}</span>
-                    <button class="btn btn-danger" onclick="removeField('${containerId}', ${fieldNumber})">✕</button>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Key *</label>
-                        <input type="text" class="field-key" value="${keyText}" placeholder="identificador_unico">
-                    </div>
-                    <div class="form-group">
-                        <label>Label *</label>
-                        <input type="text" class="field-label" value="${labelText}" placeholder="Etiqueta">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Value *</label>
-                        <input type="text" class="field-value" value="${valueText}" placeholder="Valor del campo">
-                    </div>
-                    <div class="form-group">
-                        <label>Attributed Value</label>
-                        <input type="text" class="field-attributedValue" placeholder="Valor formateado">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Change Message</label>
-                        <input type="text" class="field-changeMessage" placeholder="Actualizado a %@">
-                    </div>
-                    <div class="form-group">
-                        <label>Data Detectors</label>
-                        <select class="field-dataDetectorTypes">
-                            <option value="">Ninguno</option>
-                            <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
-                            <option value="PKDataDetectorTypeLink">Link</option>
-                            <option value="PKDataDetectorTypeAddress">Dirección</option>
-                            <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-
-            container.appendChild(fieldDiv);
-
-            // Add event listeners to field inputs for live preview
-            const fieldInputs = fieldDiv.querySelectorAll('input, select');
-            fieldInputs.forEach(input => {
-                input.addEventListener('input', updateLivePreview);
-                input.addEventListener('change', updateLivePreview);
-            });
-
-            updateLivePreview();
-        }
-
-        // Remover campo
-        function removeField(containerId, fieldNumber) {
-            const fieldDiv = document.getElementById(`${containerId}_${fieldNumber}`);
-            if (fieldDiv) {
-                fieldDiv.remove();
-                updateLivePreview();
-            }
-        }
-
-        // Recopilar campos
-        function collectFields(containerId) {
-            const container = document.getElementById(containerId);
-            const fieldDivs = container.querySelectorAll('.field-entry');
-            const fields = [];
-
-            fieldDivs.forEach(fieldDiv => {
-                const field = {
-                    key: fieldDiv.querySelector('.field-key').value,
-                    label: fieldDiv.querySelector('.field-label').value,
-                    value: fieldDiv.querySelector('.field-value').value
-                };
-
-                const attributedValue = fieldDiv.querySelector('.field-attributedValue').value;
-                if (attributedValue) field.attributedValue = attributedValue;
-
-                const changeMessage = fieldDiv.querySelector('.field-changeMessage').value;
-                if (changeMessage) field.changeMessage = changeMessage;
-
-                const dataDetectorTypes = fieldDiv.querySelector('.field-dataDetectorTypes').value;
-                if (dataDetectorTypes) field.dataDetectorTypes = [dataDetectorTypes];
-
-                fields.push(field);
-            });
-
-            return fields;
-        }
-
-        // Construir objeto del pass
-        function buildPassData() {
-            const passType = document.getElementById('passType').value;
-
-            const data = {
-                type: passType,
-                description: document.getElementById('description').value || 'Mi Pass',
-                organizationName: document.getElementById('organizationName').value || 'Mi Organización',
-                logoText: document.getElementById('logoText').value || '',
-                backgroundColor: document.getElementById('backgroundColorText').value,
-                foregroundColor: document.getElementById('foregroundColorText').value,
-                labelColor: document.getElementById('labelColorText').value
-            };
-
-            // Agregar strip color si tiene valor
-            const stripColor = document.getElementById('stripColorText').value;
-            if (stripColor) data.stripColor = stripColor;
-
-            // Agregar campos
-            data.primaryFields = collectFields('primaryFields');
-            data.secondaryFields = collectFields('secondaryFields');
-            data.auxiliaryFields = collectFields('auxiliaryFields');
-            data.headerFields = collectFields('headerFields');
-            data.backFields = collectFields('backFields');
-
-            // Agregar additional info fields si es event ticket
-            if (passType === 'eventTicket') {
-                data.additionalInfoFields = collectFields('additionalInfoFields');
-            }
-
-            // Agregar transit type si es boarding pass
-            if (passType === 'boardingPass') {
-                data.transitType = document.getElementById('transitType').value;
-            }
-
-            // Agregar código de barras
-            data.barcode = {
-                format: document.getElementById('barcodeFormat').value,
-                message: document.getElementById('barcodeMessage').value || 'https://example.com/pass/12345',
-                altText: document.getElementById('barcodeAltText').value
-            };
-
-            // Agregar fecha de expiración si tiene valor
-            const expirationDate = document.getElementById('expirationDate').value;
-            if (expirationDate) {
-                data.expirationDate = new Date(expirationDate).toISOString();
-            }
-
-            // Agregar fecha relevante si tiene valor
-            const relevantDate = document.getElementById('relevantDate').value;
-            if (relevantDate) {
-                data.relevantDate = new Date(relevantDate).toISOString();
-            }
-
-            // Agregar grouping identifier si tiene valor
-            const groupingIdentifier = document.getElementById('groupingIdentifier').value;
-            if (groupingIdentifier) {
-                data.groupingIdentifier = groupingIdentifier;
-            }
-
-            // Agregar imágenes
-            if (Object.keys(uploadedImages).length > 0) {
-                data.images = {};
-                if (uploadedImages.icon2xImage) data.images.icon2x = uploadedImages.icon2xImage;
-                if (uploadedImages.logo2xImage) data.images.logo2x = uploadedImages.logo2xImage;
-                if (uploadedImages.background2xImage) data.images.background2x = uploadedImages.background2xImage;
-                if (uploadedImages.thumbnail2xImage) data.images.thumbnail2x = uploadedImages.thumbnail2xImage;
-                if (uploadedImages.strip2xImage) data.images.strip2x = uploadedImages.strip2xImage;
-            }
-
-            return data;
-        }
-
-        // Previsualizar JSON
-        function previewJSON() {
-            const data = buildPassData();
-            const jsonPreview = document.getElementById('jsonPreview');
-            const previewDiv = document.getElementById('preview');
-
-            jsonPreview.textContent = JSON.stringify(data, null, 2);
-            previewDiv.style.display = 'block';
-        }
-
-        // Generar pass
-        async function generatePass() {
-            const statusEl = document.getElementById('status');
-            const data = buildPassData();
-
-            try {
-                statusEl.style.display = 'block';
-                statusEl.className = 'status loading';
-                statusEl.textContent = '⏳ Generando pass...';
-
-                const response = await fetch('/pass', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
+        createApp({
+            data() {
+                return {
+                    activeTab: 'generator',
+                    passType: 'generic',
+                    transitType: 'PKTransitTypeAir',
+                    description: '',
+                    organizationName: '',
+                    logoText: '',
+                    backgroundColor: '#1a1a2e',
+                    foregroundColor: '#ffffff',
+                    labelColor: '#e94560',
+                    stripColor: '#667eea',
+                    barcodeFormat: 'PKBarcodeFormatQR',
+                    barcodeMessage: '',
+                    barcodeAltText: '',
+                    expirationDate: '',
+                    relevantDate: '',
+                    groupingIdentifier: '',
+                    uploadedImages: {},
+                    fieldCounter: {
+                        primaryFields: 0,
+                        secondaryFields: 0,
+                        auxiliaryFields: 0,
+                        headerFields: 0,
+                        backFields: 0,
+                        additionalInfoFields: 0
                     },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Server returned ${response.status}`);
+                    primaryFields: [],
+                    secondaryFields: [],
+                    auxiliaryFields: [],
+                    headerFields: [],
+                    backFields: [],
+                    additionalInfoFields: []
+                };
+            },
+            computed: {
+                backgroundGradient() {
+                    return `linear-gradient(135deg, ${this.backgroundColor} 0%, ${this.adjustColor(this.backgroundColor, -20)} 100%)`;
+                },
+                adjustedLabelColor() {
+                    return this.adjustColor(this.foregroundColor, -40);
+                },
+                showTransitType() {
+                    return this.passType === 'boardingPass';
+                },
+                showAdditionalInfoFields() {
+                    return this.passType === 'eventTicket';
+                },
+                displayBarcodeText() {
+                    if (!this.barcodeMessage) return 'QR CODE';
+                    switch (this.barcodeFormat) {
+                        case 'PKBarcodeFormatQR': return 'QR CODE';
+                        case 'PKBarcodeFormatPDF417': return 'PDF417';
+                        case 'PKBarcodeFormatAztec': return 'AZTEC';
+                        case 'PKBarcodeFormatCode128': return 'CODE 128';
+                        default: return 'QR CODE';
+                    }
+                },
+                displayOrganizationName() {
+                    return this.organizationName || 'Mi Organización';
+                },
+                hasLogoImage() {
+                    return !!this.uploadedImages.logo2xImage;
+                },
+                hasStripImage() {
+                    return !!this.uploadedImages.strip2xImage;
+                },
+                logoImageUrl() {
+                    return this.uploadedImages.logo2xImage || '';
+                },
+                stripImageUrl() {
+                    return this.uploadedImages.strip2xImage || '';
                 }
+            },
+            methods: {
+                adjustColor(color, amount) {
+                    const hex = color.replace('#', '');
+                    const num = parseInt(hex, 16);
+                    const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+                    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+                    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+                    return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+                },
+                addField(type, presetData = null) {
+                    const fieldNumber = ++this.fieldCounter[type];
+                    const field = {
+                        id: fieldNumber,
+                        key: presetData?.key || `field_${type}_${fieldNumber}`,
+                        label: presetData?.label || `Campo ${fieldNumber}`,
+                        value: presetData?.value || 'Valor',
+                        attributedValue: presetData?.attributedValue || '',
+                        changeMessage: presetData?.changeMessage || '',
+                        dataDetectorTypes: presetData?.dataDetectorTypes || ''
+                    };
+                    this[type].push(field);
+                },
+                removeField(type, id) {
+                    const index = this[type].findIndex(f => f.id === id);
+                    if (index > -1) {
+                        this[type].splice(index, 1);
+                    }
+                },
+                handleImageUpload(event, imageKey) {
+                    const file = event.target.files[0];
+                    if (!file) {
+                        delete this.uploadedImages[imageKey];
+                        return;
+                    }
 
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const fileName = data.type.toLowerCase() + '-pass.pkpass';
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.uploadedImages[imageKey] = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                },
+                generatePass() {
+                    const data = this.buildPassData();
+                    
+                    fetch('/pass', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Server returned ${response.status}`);
+                        }
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        const fileName = data.type.toLowerCase() + '-pass.pkpass';
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
 
-                statusEl.className = 'status success';
-                statusEl.innerHTML = '✅ <strong>¡Pass generado exitosamente!</strong><br><br>Abre el archivo .pkpass en tu dispositivo iOS para añadirlo a Apple Wallet.';
-            } catch (error) {
-                console.error('Error:', error);
-                statusEl.className = 'status error';
-                statusEl.innerHTML = `❌ <strong>Error:</strong> ${error.message}<br><br>Asegúrate de que el servidor esté corriendo con certificados válidos.`;
+                        this.showStatus('success', '✅ <strong>¡Pass generado exitosamente!</strong><br><br>Abre el archivo .pkpass en tu dispositivo iOS para añadirlo a Apple Wallet.');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.showStatus('error', `❌ <strong>Error:</strong> ${error.message}<br><br>Asegúrate de que el servidor esté corriendo con certificados válidos.`);
+                    });
+                },
+                previewJSON() {
+                    const data = this.buildPassData();
+                    const jsonPreview = document.getElementById('jsonPreview');
+                    const previewDiv = document.getElementById('preview');
+
+                    jsonPreview.textContent = JSON.stringify(data, null, 2);
+                    previewDiv.style.display = 'block';
+                },
+                resetForm() {
+                    this.description = '';
+                    this.organizationName = '';
+                    this.logoText = '';
+                    this.barcodeMessage = '';
+                    this.barcodeAltText = '';
+                    this.expirationDate = '';
+                    this.relevantDate = '';
+                    this.groupingIdentifier = '';
+                    this.backgroundColor = '#1a1a2e';
+                    this.foregroundColor = '#ffffff';
+                    this.labelColor = '#e94560';
+                    this.stripColor = '#667eea';
+                    this.uploadedImages = {};
+                    this.primaryFields = [];
+                    this.secondaryFields = [];
+                    this.auxiliaryFields = [];
+                    this.headerFields = [];
+                    this.backFields = [];
+                    this.additionalInfoFields = [];
+                    this.fieldCounter = {
+                        primaryFields: 0,
+                        secondaryFields: 0,
+                        auxiliaryFields: 0,
+                        headerFields: 0,
+                        backFields: 0,
+                        additionalInfoFields: 0
+                    };
+
+                    document.getElementById('icon2xImage').value = '';
+                    document.getElementById('logo2xImage').value = '';
+                    document.getElementById('background2xImage').value = '';
+                    document.getElementById('thumbnail2xImage').value = '';
+                    document.getElementById('strip2xImage').value = '';
+                    document.getElementById('preview').style.display = 'none';
+                    document.getElementById('status').style.display = 'none';
+
+                    this.initializeExampleFields();
+                },
+                showStatus(type, message) {
+                    const statusEl = document.getElementById('status');
+                    statusEl.style.display = 'block';
+                    statusEl.className = `status ${type}`;
+                    statusEl.innerHTML = message;
+                },
+                buildPassData() {
+                    const data = {
+                        type: this.passType,
+                        description: this.description || 'Mi Pass',
+                        organizationName: this.organizationName || 'Mi Organización',
+                        logoText: this.logoText || '',
+                        backgroundColor: this.backgroundColor,
+                        foregroundColor: this.foregroundColor,
+                        labelColor: this.labelColor,
+                        primaryFields: this.primaryFields.map(f => this.formatField(f)),
+                        secondaryFields: this.secondaryFields.map(f => this.formatField(f)),
+                        auxiliaryFields: this.auxiliaryFields.map(f => this.formatField(f)),
+                        headerFields: this.headerFields.map(f => this.formatField(f)),
+                        backFields: this.backFields.map(f => this.formatField(f)),
+                        barcode: {
+                            format: this.barcodeFormat,
+                            message: this.barcodeMessage || 'https://example.com/pass/12345',
+                            altText: this.barcodeAltText
+                        }
+                    };
+
+                    if (this.stripColor) {
+                        data.stripColor = this.stripColor;
+                    }
+
+                    if (this.passType === 'eventTicket') {
+                        data.additionalInfoFields = this.additionalInfoFields.map(f => this.formatField(f));
+                    }
+
+                    if (this.passType === 'boardingPass') {
+                        data.transitType = this.transitType;
+                    }
+
+                    if (this.expirationDate) {
+                        data.expirationDate = new Date(this.expirationDate).toISOString();
+                    }
+
+                    if (this.relevantDate) {
+                        data.relevantDate = new Date(this.relevantDate).toISOString();
+                    }
+
+                    if (this.groupingIdentifier) {
+                        data.groupingIdentifier = this.groupingIdentifier;
+                    }
+
+                    if (Object.keys(this.uploadedImages).length > 0) {
+                        data.images = {};
+                        if (this.uploadedImages.icon2xImage) data.images.icon2x = this.uploadedImages.icon2xImage;
+                        if (this.uploadedImages.logo2xImage) data.images.logo2x = this.uploadedImages.logo2xImage;
+                        if (this.uploadedImages.background2xImage) data.images.background2x = this.uploadedImages.background2xImage;
+                        if (this.uploadedImages.thumbnail2xImage) data.images.thumbnail2x = this.uploadedImages.thumbnail2xImage;
+                        if (this.uploadedImages.strip2xImage) data.images.strip2x = this.uploadedImages.strip2xImage;
+                    }
+
+                    return data;
+                },
+                formatField(field) {
+                    const f = {
+                        key: field.key,
+                        label: field.label,
+                        value: field.value
+                    };
+
+                    if (field.attributedValue) f.attributedValue = field.attributedValue;
+                    if (field.changeMessage) f.changeMessage = field.changeMessage;
+                    if (field.dataDetectorTypes) f.dataDetectorTypes = [field.dataDetectorTypes];
+
+                    return f;
+                },
+                initializeExampleFields() {
+                    this.addField('primaryFields', {
+                        key: 'primary_example',
+                        label: 'Título Principal',
+                        value: 'Ejemplo de Pass'
+                    });
+                    this.addField('secondaryFields', {
+                        key: 'sec_example',
+                        label: 'Secundario',
+                        value: 'Información'
+                    });
+                }
+            },
+            mounted() {
+                this.initializeExampleFields();
             }
-        }
-
-        // Resetear formulario
-        function resetForm() {
-            // Resetear campos básicos
-            document.getElementById('description').value = '';
-            document.getElementById('organizationName').value = '';
-            document.getElementById('logoText').value = '';
-            document.getElementById('barcodeMessage').value = '';
-            document.getElementById('barcodeAltText').value = '';
-            document.getElementById('expirationDate').value = '';
-            document.getElementById('relevantDate').value = '';
-            document.getElementById('groupingIdentifier').value = '';
-
-            // Resetear colores a valores por defecto
-            document.getElementById('backgroundColor').value = '#1a1a2e';
-            document.getElementById('backgroundColorText').value = '#1a1a2e';
-            document.getElementById('foregroundColor').value = '#ffffff';
-            document.getElementById('foregroundColorText').value = '#ffffff';
-            document.getElementById('labelColor').value = '#e94560';
-            document.getElementById('labelColorText').value = '#e94560';
-            document.getElementById('stripColor').value = '#667eea';
-            document.getElementById('stripColorText').value = '#667eea';
-
-            // Resetear imágenes
-            document.getElementById('icon2xImage').value = '';
-            document.getElementById('logo2xImage').value = '';
-            document.getElementById('background2xImage').value = '';
-            document.getElementById('thumbnail2xImage').value = '';
-            document.getElementById('strip2xImage').value = '';
-            uploadedImages = {};
-
-            // Limpiar campos existentes
-            Object.keys(fieldCounter).forEach(key => {
-                fieldCounter[key] = 0;
-                document.getElementById(key).innerHTML = '';
-            });
-
-            // Inicializar con campos de ejemplo
-            initializeExampleFields();
-
-            // Ocultar preview
-            document.getElementById('preview').style.display = 'none';
-            document.getElementById('status').style.display = 'none';
-        }
+        }).mount('#app');
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
-            updatePassType();
-            initializeExampleFields();
-            addPreviewListeners();
+            // Vue app is automatically mounted, no additional initialization needed
         });
     </script>
 </body>
