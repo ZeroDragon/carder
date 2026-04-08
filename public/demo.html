@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apple Wallet Pass Generator - Demo Completo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #1d1d1f;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            color: #86868b;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e8e8ed;
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: #f5f5f7;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .tab:hover {
+            background: #e8e8ed;
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #1d1d1f;
+            border-bottom: 2px solid #e8e8ed;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        h3 {
+            color: #4a4a4a;
+            margin-bottom: 10px;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #4a4a4a;
+            font-size: 0.9em;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .color-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .color-input input[type="color"] {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .color-input input[type="text"] {
+            flex: 1;
+        }
+        .fields-container {
+            border: 1px solid #e8e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+        .field-entry {
+            background: white;
+            border: 1px solid #e8e8ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .field-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .field-number {
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        .btn-add {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+        .info {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+        }
+        .preview {
+            background: #f5f5f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .preview h3 {
+            margin-top: 0;
+        }
+        .json-preview {
+            background: #1d1d1f;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .documentation {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .documentation h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .documentation ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        .documentation li {
+            margin-bottom: 5px;
+        }
+        code {
+            background: #e8e8ed;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #667eea;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        .badge-new {
+            background: #f45c43;
+        }
+        .badge-optional {
+            background: #6c757d;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Pass Preview Styles */
+        .pass-preview {
+            background: #f5f5f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .pass-preview h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .pass-preview-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        .pass-preview-controls button {
+            padding: 8px 16px;
+            background: #e8e8ed;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .pass-preview-controls button:hover {
+            background: #d1d1d6;
+        }
+        .pass-preview-controls button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .pass-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 250px;
+            max-width: 350px;
+            margin: 0 auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .pass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        .pass-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        .pass-logo {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+        }
+        .pass-logo-text {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 0.5px;
+        }
+        .pass-primary {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pass-primary-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .pass-primary-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .pass-secondary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .pass-secondary-field {
+            text-align: center;
+        }
+        .pass-secondary-label {
+            font-size: 10px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .pass-secondary-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+        .pass-barcode {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .pass-barcode-placeholder {
+            width: 150px;
+            height: 150px;
+            background: white;
+            margin: 0 auto;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .pass-footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+        .pass-back {
+            display: none;
+        }
+        .pass-back.active {
+            display: block;
+        }
+        .pass-front {
+            display: block;
+        }
+        .pass-front.hidden {
+            display: none;
+        }
+        .pass-back-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .pass-back-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .pass-back-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .pass-back-field {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .pass-back-label {
+            color: rgba(255,255,255,0.6);
+            flex: 1;
+        }
+        .pass-back-value {
+            color: #ffffff;
+            font-weight: 500;
+            text-align: right;
+            flex: 1;
+        }
+        .pass-back-empty {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+            padding: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .tabs {
+                flex-wrap: wrap;
+            }
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎫 Apple Wallet Pass Generator</h1>
+        <p class="subtitle">Generador interactivo de passes para Apple Wallet con documentación completa</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('generator')">⚡ Generador</button>
+            <button class="tab" onclick="switchTab('docs')">📖 Documentación</button>
+            <button class="tab" onclick="switchTab('api')">🔌 API</button>
+        </div>
+
+        <!-- Generator Tab -->
+        <div id="generator" class="tab-content active">
+            <div class="section">
+                <h2>Configuración Básica</h2>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="passType">Tipo de Pass *</label>
+                        <select id="passType" onchange="updatePassType()">
+                            <option value="generic">📄 Generic (Genérico)</option>
+                            <option value="eventTicket">🎫 Event Ticket (Boleto de Evento)</option>
+                            <option value="boardingPass">✈️ Boarding Pass (Pase de Abordar)</option>
+                            <option value="coupon">🎟️ Coupon (Cupón)</option>
+                            <option value="storeCard">💳 Store Card (Tarjeta de Tienda)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="transitTypeGroup" style="display: none;">
+                        <label for="transitType">Tipo de Transporte *</label>
+                        <select id="transitType">
+                            <option value="PKTransitTypeAir">✈️ Aire (Avión)</option>
+                            <option value="PKTransitTypeBoat">⛵ Barco</option>
+                            <option value="PKTransitTypeBus">🚌 Autobús</option>
+                            <option value="PKTransitTypeTrain">🚂 Tren</option>
+                            <option value="PKTransitTypeGeneric">🚶 Genérico</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="description">Descripción *</label>
+                        <input type="text" id="description" placeholder="Mi Pass Personalizado">
+                    </div>
+                    <div class="form-group">
+                        <label for="organizationName">Organización *</label>
+                        <input type="text" id="organizationName" placeholder="Mi Empresa">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="logoText">Texto del Logo</label>
+                    <input type="text" id="logoText" placeholder="LOGO">
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🎨 Colores</h2>
+                <div class="color-inputs">
+                    <div class="color-input">
+                        <input type="color" id="backgroundColor" value="#1a1a2e" onchange="updateColorText(this)">
+                        <input type="text" id="backgroundColorText" value="#1a1a2e" placeholder="#1a1a2e">
+                    </div>
+                    <div class="color-input">
+                        <input type="color" id="foregroundColor" value="#ffffff" onchange="updateColorText(this)">
+                        <input type="text" id="foregroundColorText" value="#ffffff" placeholder="#ffffff">
+                    </div>
+                    <div class="color-input">
+                        <input type="color" id="labelColor" value="#e94560" onchange="updateColorText(this)">
+                        <input type="text" id="labelColorText" value="#e94560" placeholder="#e94560">
+                    </div>
+                    <div class="color-input">
+                        <input type="color" id="stripColor" value="#667eea" onchange="updateColorText(this)">
+                        <input type="text" id="stripColorText" value="#667eea" placeholder="#667eea">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🖼️ Imágenes</h2>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label for="iconImage">Icono (icon.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="iconImage" accept="image/png" onchange="handleImageUpload(this, 'iconImage')">
+                        <small>Máximo: 29x29</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="icon2xImage">Icono @2x (icon@2x.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="icon2xImage" accept="image/png" onchange="handleImageUpload(this, 'icon2xImage')">
+                        <small>Máximo: 58x58</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="logoImage">Logo (logo.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="logoImage" accept="image/png" onchange="handleImageUpload(this, 'logoImage')">
+                        <small>Máximo: 120x120</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="logo2xImage">Logo @2x (logo@2x.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="logo2xImage" accept="image/png" onchange="handleImageUpload(this, 'logo2xImage')">
+                        <small>Máximo: 240x240</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="backgroundImage">Fondo (background.png) <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="backgroundImage" accept="image/png" onchange="handleImageUpload(this, 'backgroundImage')">
+                        <small>Sin límite específico</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="background2xImage">Fondo @2x (background@2x.png) <span class="badge badge-new">iOS 18+</span> <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="background2xImage" accept="image/png" onchange="handleImageUpload(this, 'background2xImage')">
+                        <small>Sin límite específico</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="thumbnailImage">Thumbnail (thumbnail.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="thumbnailImage" accept="image/png" onchange="handleImageUpload(this, 'thumbnailImage')">
+                        <small>Máximo: 300x300</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="thumbnail2xImage">Thumbnail @2x (thumbnail@2x.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="thumbnail2xImage" accept="image/png" onchange="handleImageUpload(this, 'thumbnail2xImage')">
+                        <small>Máximo: 600x600</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="stripImage">Strip (strip.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="stripImage" accept="image/png" onchange="handleImageUpload(this, 'stripImage')">
+                        <small>Máximo: 390x123</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="strip2xImage">Strip @2x (strip@2x.png) <span class="badge badge-optional">Opcional</span></label>
+                        <input type="file" id="strip2xImage" accept="image/png" onchange="handleImageUpload(this, 'strip2xImage')">
+                        <small>Máximo: 780x246</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📊 Campos del Frente</h2>
+
+                <!-- Primary Fields -->
+                <div class="fields-container">
+                    <h3>Primary Fields <span class="badge">Requerido</span> <small>El campo más grande y visible</small></h3>
+                    <div id="primaryFields"></div>
+                    <button class="btn btn-add" onclick="addField('primaryFields')">+ Agregar Campo Primary</button>
+                </div>
+
+                <!-- Secondary Fields -->
+                <div class="fields-container">
+                    <h3>Secondary Fields <span class="badge-optional">Opcional</span> <small>Campos secundarios debajo del primary</small></h3>
+                    <div id="secondaryFields"></div>
+                    <button class="btn btn-add" onclick="addField('secondaryFields')">+ Agregar Campo Secondary</button>
+                </div>
+
+                <!-- Auxiliary Fields -->
+                <div class="fields-container">
+                    <h3>Auxiliary Fields <span class="badge-optional">Opcional</span> <small>Información adicional</small></h3>
+                    <div id="auxiliaryFields"></div>
+                    <button class="btn btn-add" onclick="addField('auxiliaryFields')">+ Agregar Campo Auxiliary</button>
+                </div>
+
+                <!-- Header Fields -->
+                <div class="fields-container">
+                    <h3>Header Fields <span class="badge-optional">Opcional</span> <small>Información en el encabezado superior</small></h3>
+                    <div id="headerFields"></div>
+                    <button class="btn btn-add" onclick="addField('headerFields')">+ Agregar Campo Header</button>
+                </div>
+
+                <!-- Back Fields -->
+                <div class="fields-container">
+                    <h3>Back Fields <span class="badge-optional">Opcional</span> <small>Información visible al girar el pass</small></h3>
+                    <div id="backFields"></div>
+                    <button class="btn btn-add" onclick="addField('backFields')">+ Agregar Campo Back</button>
+                </div>
+
+                <!-- Additional Info Fields (iOS 18+) -->
+                <div class="fields-container" id="additionalInfoFieldsContainer" style="display: none;">
+                    <h3>Additional Info Fields <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> <small>Solo para Event Tickets</small></h3>
+                    <div id="additionalInfoFields"></div>
+                    <button class="btn btn-add" onclick="addField('additionalInfoFields')">+ Agregar Campo Additional Info</button>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>📱 Código de Barras</h2>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="barcodeFormat">Formato *</label>
+                        <select id="barcodeFormat">
+                            <option value="PKBarcodeFormatQR">QR Code</option>
+                            <option value="PKBarcodeFormatPDF417">PDF417</option>
+                            <option value="PKBarcodeFormatAztec">Aztec</option>
+                            <option value="PKBarcodeFormatCode128">Code 128</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="barcodeMessage">Mensaje/Código *</label>
+                        <input type="text" id="barcodeMessage" placeholder="https://ejemplo.com/ticket/12345">
+                    </div>
+                    <div class="form-group">
+                        <label for="barcodeAltText">Texto Alternativo</label>
+                        <input type="text" id="barcodeAltText" placeholder="12345">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>⚙️ Configuración Adicional</h2>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="expirationDate">Fecha de Expiración</label>
+                        <input type="datetime-local" id="expirationDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="relevantDate">Fecha Relevante</label>
+                        <input type="datetime-local" id="relevantDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="groupingIdentifier">Identificador de Agrupación</label>
+                        <input type="text" id="groupingIdentifier" placeholder="passes-mis-eventos">
+                    </div>
+                </div>
+            </div>
+
+            <div class="pass-preview">
+                <h3>👁️ Live Preview</h3>
+                <div class="pass-preview-controls">
+                    <button id="frontViewBtn" class="active" onclick="switchPassView('front')">🎴 Frente</button>
+                    <button id="backViewBtn" onclick="switchPassView('back')">📄 Atrás</button>
+                </div>
+                <div class="pass-card" id="passCard">
+                    <!-- Front View -->
+                    <div class="pass-front" id="passFront">
+                        <div class="pass-header">
+                            <div class="pass-logo" id="previewLogo">🎫</div>
+                            <div class="pass-logo-text" id="previewLogoText">LOGO</div>
+                        </div>
+                        <div class="pass-primary">
+                            <div class="pass-primary-label" id="previewPrimaryLabel">TÍTULO</div>
+                            <div class="pass-primary-value" id="previewPrimaryValue">Ejemplo de Pass</div>
+                        </div>
+                        <div class="pass-secondary">
+                            <div class="pass-secondary-field">
+                                <div class="pass-secondary-label">Secundario</div>
+                                <div class="pass-secondary-value" id="previewSecondary1Value">Info</div>
+                            </div>
+                            <div class="pass-secondary-field">
+                                <div class="pass-secondary-label">Estado</div>
+                                <div class="pass-secondary-value" id="previewSecondary2Value">Activo</div>
+                            </div>
+                        </div>
+                        <div class="pass-barcode">
+                            <div class="pass-barcode-placeholder" id="previewBarcode">QR CODE</div>
+                        </div>
+                        <div class="pass-footer" id="previewFooter">Mi Organización</div>
+                    </div>
+                    <!-- Back View -->
+                    <div class="pass-back" id="passBack">
+                        <div class="pass-header">
+                            <div class="pass-logo" id="previewBackLogo">🎫</div>
+                            <div class="pass-logo-text" id="previewBackLogoText">LOGO</div>
+                        </div>
+                        <div id="previewBackFields">
+                            <div class="pass-back-empty">
+                                Agrega campos "Back Fields" para ver información aquí
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-primary" onclick="generatePass()">🚀 Generar Pass</button>
+                <button class="btn btn-success" onclick="previewJSON()">👁️ Previsualizar JSON</button>
+                <button class="btn" onclick="resetForm()">🔄 Resetear Formulario</button>
+            </div>
+
+            <div id="status" class="status"></div>
+
+            <div id="preview" class="preview" style="display: none;">
+                <h3>📄 JSON del Pass</h3>
+                <div id="jsonPreview" class="json-preview"></div>
+            </div>
+        </div>
+
+        <!-- Documentation Tab -->
+        <div id="docs" class="tab-content">
+            <div class="documentation">
+                <h2>📖 Documentación Completa de Apple Wallet Passes</h2>
+
+                <h3>🎯 Tipos de Passes Disponibles</h3>
+                <ul>
+                    <li><strong>generic</strong> - Pass genérico para cualquier uso personalizado</li>
+                    <li><strong>eventTicket</strong> - Boletos de eventos (conciertos, deportes, teatro, etc.)</li>
+                    <li><strong>boardingPass</strong> - Pases de abordar (requiere <code>transitType</code>)</li>
+                    <li><strong>coupon</strong> - Cupones y descuentos</li>
+                    <li><strong>storeCard</strong> - Tarjetas de lealtad de tiendas</li>
+                </ul>
+
+                <h3>📊 Campos del Pass (Fields)</h3>
+                <p>Los campos se dividen en varias categorías según su posición visual:</p>
+
+                <h4>1. Primary Fields <span class="badge">Requerido</span></h4>
+                <p>El campo más grande y prominente en el frente del pass.</p>
+                <ul>
+                    <li><strong>key</strong> - Identificador único del campo (required)</li>
+                    <li><strong>label</strong> - Etiqueta descriptiva (ej: "Nombre")</li>
+                    <li><strong>value</strong> - Valor del campo (ej: "Juan Pérez")</li>
+                    <li><strong>attributedValue</strong> - Valor formateado (ej: valor numérico con formato de moneda)</li>
+                    <li><strong>changeMessage</strong> - Mensaje cuando cambia el valor (ej: "Puntos actualizados a %@")</li>
+                    <li><strong>textAlignment</strong> - Alineación del texto (left, center, right, natural)</li>
+                    <li><strong>dateStyle</strong> - Formato de fecha (none, short, medium, long, full)</li>
+                    <li><strong>timeStyle</strong> - Formato de hora (none, short, medium, long)</li>
+                    <li><strong>isRelative</strong> - Si la fecha es relativa (ej: "hace 2 horas")</li>
+                    <li><strong>ignoresTimeZone</strong> - Ignorar zona horaria</li>
+                    <li><strong>currencyCode</strong> - Código de moneda (ej: "USD", "MXN")</li>
+                    <li><strong>numberStyle</strong> - Estilo de número (decimal, percent, scientific, spellOut)</li>
+                    <li><strong>dataDetectorTypes</strong> - Tipos de datos detectables (phone, link, address, calendar)</li>
+                </ul>
+
+                <h4>2. Secondary Fields <span class="badge-optional">Opcional</span></h4>
+                <p>Campos secundarios que aparecen debajo del primary field.</p>
+                <ul>
+                    <li>Mismas propiedades que <code>Primary Fields</code></li>
+                </ul>
+
+                <h4>3. Auxiliary Fields <span class="badge-optional">Opcional</span></h4>
+                <p>Campos auxiliares con información adicional.</p>
+                <ul>
+                    <li>Mismas propiedades que <code>Primary Fields</code></li>
+                    <li><strong>row</strong> - Número de fila (0 o 1) para event tickets</li>
+                </ul>
+
+                <h4>4. Header Fields <span class="badge-optional">Opcional</span></h4>
+                <p>Campos que aparecen en el encabezado superior del pass.</p>
+                <ul>
+                    <li>Mismas propiedades que <code>Primary Fields</code></li>
+                </ul>
+
+                <h4>5. Back Fields <span class="badge-optional">Opcional</span></h4>
+                <p>Campos visibles al girar el pass (parte trasera).</p>
+                <ul>
+                    <li>Mismas propiedades que <code>Primary Fields</code></li>
+                </ul>
+
+                <h4>6. Additional Info Fields <span class="badge badge-new">iOS 18+</span></h4>
+                <p>Información adicional para Event Tickets con el nuevo diseño.</p>
+                <ul>
+                    <li>Mismas propiedades que <code>Primary Fields</code></li>
+                    <li>Disponible solo para <code>eventTicket</code></li>
+                </ul>
+
+                <h3>🎨 Configuración de Colores</h3>
+                <ul>
+                    <li><strong>backgroundColor</strong> - Color de fondo del pass (ej: "#1a1a2e")</li>
+                    <li><strong>foregroundColor</strong> - Color del texto (ej: "#ffffff")</li>
+                    <li><strong>labelColor</strong> - Color de las etiquetas (ej: "#e94560")</li>
+                    <li><strong>stripColor</strong> - Color de la franja (opcional, ej: "#667eea")</li>
+                    <li><strong>footerBackgroundColor</strong> - Color del footer (iOS 18+)</li>
+                </ul>
+
+                <h3>🖼️ Imágenes</h3>
+                <p>Las imágenes deben estar en formato PNG. Apple Wallet requiere ciertos tamaños para óptima visualización:</p>
+                <ul>
+                    <li><strong>icon.png</strong> <span class="badge">Requerido</span> - Icono del pass (máximo 29x29)</li>
+                    <li><strong>icon@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 58x58)</li>
+                    <li><strong>logo.png</strong> <span class="badge-optional">Opcional</span> - Logo en el centro superior (máximo 120x120)</li>
+                    <li><strong>logo@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 240x240)</li>
+                    <li><strong>background.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Imagen de fondo completa para Event Tickets</li>
+                    <li><strong>background@2x.png</strong> <span class="badge badge-new">iOS 18+</span> <span class="badge-optional">Opcional</span> - Versión retina</li>
+                    <li><strong>thumbnail.png</strong> <span class="badge-optional">Opcional</span> - Miniatura para boarding passes y event tickets (máximo 300x300)</li>
+                    <li><strong>thumbnail@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 600x600)</li>
+                    <li><strong>strip.png</strong> <span class="badge-optional">Opcional</span> - Imagen de fondo en la parte superior (máximo 390x123)</li>
+                    <li><strong>strip@2x.png</strong> <span class="badge-optional">Opcional</span> - Versión retina (máximo 780x246)</li>
+                </ul>
+                <p><strong>Nota:</strong> El sistema redimensionará automáticamente las imágenes si exceden el tamaño máximo permitido, manteniendo la proporción.</p>
+
+                <h3>📱 Códigos de Barras</h3>
+                <h4>Formatos Disponibles:</h4>
+                <ul>
+                    <li><strong>PKBarcodeFormatQR</strong> - Código QR (más común)</li>
+                    <li><strong>PKBarcodeFormatPDF417</strong> - PDF417 (para documentos)</li>
+                    <li><strong>PKBarcodeFormatAztec</strong> - Código Aztec (compacto)</li>
+                    <li><strong>PKBarcodeFormatCode128</strong> - Code 128 (barra estándar)</li>
+                </ul>
+                <h4>Propiedades:</h4>
+                <ul>
+                    <li><strong>format</strong> - Formato del código de barras (required)</li>
+                    <li><strong>message</strong> - Contenido del código (required)</li>
+                    <li><strong>messageEncoding</strong> - Codificación (default: "iso-8859-1")</li>
+                    <li><strong>altText</strong> - Texto alternativo visible debajo del código</li>
+                </ul>
+
+                <h3>⚙️ Propiedades Adicionales</h3>
+                <ul>
+                    <li><strong>serialNumber</strong> - Número de serie único del pass</li>
+                    <li><strong>description</strong> - Descripción del pass (required)</li>
+                    <li><strong>organizationName</strong> - Nombre de la organización (required)</li>
+                    <li><strong>logoText</strong> - Texto del logo (opcional)</li>
+                    <li><strong>expirationDate</strong> - Fecha de expiración del pass</li>
+                    <li><strong>relevantDate</strong> - Fecha relevante para mostrar el pass</li>
+                    <li><strong>relevantDates</strong> - Array de intervalos relevantes (iOS 18+)</li>
+                    <li><strong>groupingIdentifier</strong> - Identificador para agrupar passes</li>
+                    <li><strong>voided</strong> - Si el pass está invalidado</li>
+                    <li><strong>sharingProhibited</strong> - Si se prohibe compartir el pass</li>
+                    <li><strong>suppressStripShine</strong> - Suprimir efecto de brillo en la franja</li>
+                    <li><strong>userInfo</strong> - Información personalizada arbitraria</li>
+                    <li><strong>webServiceURL</strong> - URL del web service para actualizaciones</li>
+                    <li><strong>authenticationToken</strong> - Token de autenticación para web service</li>
+                    <li><strong>associatedStoreIdentifiers</strong> - IDs de apps asociadas</li>
+                </ul>
+
+                <h3>📍 Ubicaciones (iOS 18+ Live Activities)</h3>
+                <p>Para activar Live Activities en event tickets:</p>
+                <ul>
+                    <li><strong>latitude</strong> - Latitud de la ubicación</li>
+                    <li><strong>longitude</strong> - Longitud de la ubicación</li>
+                    <li><strong>relevantText</strong> - Texto descriptivo de la ubicación</li>
+                </ul>
+
+                <h3>📡 Beacons (iOS 18+ Live Activities)</h3>
+                <p>Para activar Live Activities con beacons:</p>
+                <ul>
+                    <li><strong>proximityUUID</strong> - UUID del beacon</li>
+                    <li><strong>major</strong> - Número mayor (opcional)</li>
+                    <li><strong>minor</strong> - Número menor (opcional)</li>
+                    <li><strong>relevantText</strong> - Texto descriptivo</li>
+                </ul>
+
+                <h3>📲 NFC</h3>
+                <p>Para passes compatibles con NFC:</p>
+                <ul>
+                    <li><strong>message</strong> - Contenido del mensaje NFC</li>
+                    <li><strong>encryptionPublicKey</strong> - Clave pública para encriptación</li>
+                </ul>
+
+                <h3>✈️ Transit Type (para Boarding Pass)</h3>
+                <ul>
+                    <li><strong>PKTransitTypeAir</strong> - Transporte aéreo</li>
+                    <li><strong>PKTransitTypeBoat</strong> - Transporte marítimo</li>
+                    <li><strong>PKTransitTypeBus</strong> - Transporte terrestre (autobús)</li>
+                    <li><strong>PKTransitTypeTrain</strong> - Transporte ferroviario</li>
+                    <li><strong>PKTransitTypeGeneric</strong> - Transporte genérico</li>
+                </ul>
+
+                <h3>🆕 Novedades de iOS 18+</h3>
+                <ul>
+                    <li><strong>Poster Event Tickets</strong> - Nuevo diseño para boletos de eventos</li>
+                    <li><strong>Semantic Boarding Passes</strong> - Pases de abordar mejorados (iOS 26+)</li>
+                    <li><strong>Live Activities</strong> - Actividades en vivo activadas por locations, beacons o relevantDates</li>
+                    <li><strong>Event Guide</strong> - Guía del evento con botones adicionales</li>
+                    <li><strong>useAutomaticColors</strong> - Cálculo automático de colores basado en imagen de fondo</li>
+                    <li><strong>upcomingPassInformation</strong> - Información sobre passes futuros relacionados (iOS 26+)</li>
+                </ul>
+
+                <h3>📚 Enlaces Útiles</h3>
+                <ul>
+                    <li><a href="https://developer.apple.com/wallet/" target="_blank">Apple Wallet Developer Documentation</a></li>
+                    <li><a href="https://github.com/alexandercerutti/passkit-generator" target="_blank">passkit-generator Library</a></li>
+                    <li><a href="https://pkvd.app" target="_blank">Passkit Visual Designer (herramienta visual)</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- API Tab -->
+        <div id="api" class="tab-content">
+            <div class="section">
+                <h2>🔌 API Endpoints</h2>
+                <div class="documentation">
+                    <h4>POST /pass</h4>
+                    <p>Genera y descarga un archivo .pkpass</p>
+                    <p><strong>Content-Type:</strong> application/vnd.apple.pkpass</p>
+                    <p><strong>Body:</strong> JSON con datos del pass</p>
+
+                    <h4>POST /pass/json</h4>
+                    <p>Genera un pass y lo devuelve como JSON</p>
+                    <p><strong>Content-Type:</strong> application/json</p>
+                    <p><strong>Body:</strong> JSON con datos del pass</p>
+
+                    <h4>GET /health</h4>
+                    <p>Verifica el estado del servidor</p>
+                    <p><strong>Response:</strong> { status: "ok", timestamp: "..." }</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💻 Ejemplo de Código</h2>
+                <div class="json-preview">
+<pre>
+// Ejemplo básico con fetch
+const response = await fetch('http://localhost:3000/pass', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    type: 'generic',
+    description: 'Mi Pass Personalizado',
+    organizationName: 'Mi Empresa',
+    logoText: 'LOGO',
+    backgroundColor: '#1a1a2e',
+    foregroundColor: '#ffffff',
+    labelColor: '#e94560',
+    primaryFields: [{
+      key: 'name',
+      label: 'Nombre',
+      value: 'Juan Pérez'
+    }],
+    barcode: {
+      format: 'PKBarcodeFormatQR',
+      message: 'https://miempresa.com/pass/12345',
+      altText: '12345'
+    }
+  })
+});
+
+const blob = await response.blob();
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'mi-pass.pkpass';
+a.click();
+</pre>
+                </div>
+                <div class="json-preview" style="margin-top: 20px;">
+<pre>
+// Ejemplo con imágenes (en base64)
+const imageBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANS...'; // Tu imagen en base64
+const image2xBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANS...'; // Tu imagen @2x en base64
+
+const response = await fetch('http://localhost:3000/pass', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    type: 'eventTicket',
+    description: 'Boleto de Concierto',
+    organizationName: 'Concierto Inc.',
+    backgroundColor: '#1a1a2e',
+    foregroundColor: '#ffffff',
+    images: {
+      icon: imageBase64,
+      icon2x: image2xBase64,
+      background: imageBase64,
+      background2x: image2xBase64,
+      thumbnail: imageBase64,
+      thumbnail2x: image2xBase64
+    },
+    primaryFields: [{
+      key: 'event',
+      label: 'Evento',
+      value: 'Concierto de Rock'
+    }],
+    barcode: {
+      format: 'PKBarcodeFormatQR',
+      message: 'https://miempresa.com/ticket/12345',
+      altText: '12345'
+    }
+  })
+});
+</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🔄 Actualización de Passes</h2>
+                <div class="documentation">
+                    <h4>Configuración para Web Service</h4>
+                    <p>Para habilitar actualizaciones automáticas de passes:</p>
+                    <ul>
+                        <li><strong>webServiceURL</strong> - URL base de tu web service</li>
+                        <li><strong>authenticationToken</strong> - Token para autenticar requests</li>
+                    </ul>
+                    <p>El web service debe implementar los endpoints:</p>
+                    <ul>
+                        <li>GET /v1/passes/{passTypeIdentifier}/{serialNumber}</li>
+                        <li>POST /v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}</li>
+                        <li>DELETE /v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}/{serialNumber}</li>
+                        <li>GET /v1/devices/{deviceLibraryIdentifier}/registrations/{passTypeIdentifier}</li>
+                        <li>POST /v1/log</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fieldCounter = {
+            primaryFields: 0,
+            secondaryFields: 0,
+            auxiliaryFields: 0,
+            headerFields: 0,
+            backFields: 0,
+            additionalInfoFields: 0
+        };
+
+        let uploadedImages = {};
+
+        // Manejar carga de imágenes
+        function handleImageUpload(input, imageKey) {
+            const file = input.files[0];
+            if (!file) {
+                delete uploadedImages[imageKey];
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImages[imageKey] = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Inicializar con algunos campos de ejemplo
+        function initializeExampleFields() {
+            addField('primaryFields', {
+                key: 'primary_example',
+                label: 'Título Principal',
+                value: 'Ejemplo de Pass'
+            });
+            addField('secondaryFields', {
+                key: 'sec_example',
+                label: 'Secundario',
+                value: 'Información'
+            });
+            updateLivePreview();
+        }
+
+        // Actualizar live preview
+        function updateLivePreview() {
+            const passCard = document.getElementById('passCard');
+            const logoText = document.getElementById('logoText').value || 'LOGO';
+            const backgroundColor = document.getElementById('backgroundColorText').value || '#1a1a2e';
+            const foregroundColor = document.getElementById('foregroundColorText').value || '#ffffff';
+            const organizationName = document.getElementById('organizationName').value || 'Mi Organización';
+            const barcodeFormat = document.getElementById('barcodeFormat').value;
+            const barcodeMessage = document.getElementById('barcodeMessage').value || '';
+
+            // Update colors
+            passCard.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${adjustColor(backgroundColor, -20)} 100%)`;
+
+            // Update logo text (front and back)
+            document.getElementById('previewLogoText').textContent = logoText;
+            document.getElementById('previewLogoText').style.color = foregroundColor;
+            document.getElementById('previewBackLogoText').textContent = logoText;
+            document.getElementById('previewBackLogoText').style.color = foregroundColor;
+
+            // Update primary field
+            const primaryFields = collectFields('primaryFields');
+            if (primaryFields.length > 0) {
+                document.getElementById('previewPrimaryLabel').textContent = primaryFields[0].label || 'TÍTULO';
+                document.getElementById('previewPrimaryValue').textContent = primaryFields[0].value || 'Ejemplo';
+                document.getElementById('previewPrimaryValue').style.color = foregroundColor;
+            }
+
+            // Update secondary fields
+            const secondaryFields = collectFields('secondaryFields');
+            const secondaryElements = document.querySelectorAll('.pass-secondary-field');
+            secondaryElements.forEach((el, index) => {
+                if (secondaryFields[index]) {
+                    el.querySelector('.pass-secondary-label').textContent = secondaryFields[index].label || 'Campo';
+                    el.querySelector('.pass-secondary-value').textContent = secondaryFields[index].value || 'Valor';
+                    el.querySelector('.pass-secondary-value').style.color = foregroundColor;
+                }
+            });
+
+            // Update barcode
+            let barcodeText = 'QR CODE';
+            if (barcodeFormat === 'PKBarcodeFormatQR') barcodeText = 'QR CODE';
+            else if (barcodeFormat === 'PKBarcodeFormatPDF417') barcodeText = 'PDF417';
+            else if (barcodeFormat === 'PKBarcodeFormatAztec') barcodeText = 'AZTEC';
+            else if (barcodeFormat === 'PKBarcodeFormatCode128') barcodeText = 'CODE 128';
+            document.getElementById('previewBarcode').textContent = barcodeMessage ? barcodeText : barcodeText;
+
+            // Update footer
+            document.getElementById('previewFooter').textContent = organizationName;
+            document.getElementById('previewFooter').style.color = foregroundColor;
+
+            // Update labels color
+            document.querySelectorAll('.pass-secondary-label').forEach(el => {
+                el.style.color = adjustColor(foregroundColor, -40);
+            });
+            document.getElementById('previewPrimaryLabel').style.color = adjustColor(foregroundColor, -40);
+
+            // Update back fields
+            const backFields = collectFields('backFields');
+            const previewBackFields = document.getElementById('previewBackFields');
+
+            if (backFields.length === 0) {
+                previewBackFields.innerHTML = '<div class="pass-back-empty">Agrega campos "Back Fields" para ver información aquí</div>';
+            } else {
+                previewBackFields.innerHTML = backFields.map(field => `
+                    <div class="pass-back-field">
+                        <div class="pass-back-label">${field.label || 'Campo'}</div>
+                        <div class="pass-back-value">${field.value || 'Valor'}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Update back labels color
+            document.querySelectorAll('.pass-back-label').forEach(el => {
+                el.style.color = adjustColor(foregroundColor, -40);
+            });
+            document.querySelectorAll('.pass-back-value').forEach(el => {
+                el.style.color = foregroundColor;
+            });
+            document.querySelectorAll('.pass-back-empty').forEach(el => {
+                el.style.color = adjustColor(foregroundColor, -40);
+            });
+        }
+
+        // Switch between front and back view
+        function switchPassView(view) {
+            const frontView = document.getElementById('passFront');
+            const backView = document.getElementById('passBack');
+            const frontBtn = document.getElementById('frontViewBtn');
+            const backBtn = document.getElementById('backViewBtn');
+
+            if (view === 'front') {
+                frontView.classList.remove('hidden');
+                backView.classList.remove('active');
+                frontBtn.classList.add('active');
+                backBtn.classList.remove('active');
+            } else {
+                frontView.classList.add('hidden');
+                backView.classList.add('active');
+                frontBtn.classList.remove('active');
+                backBtn.classList.add('active');
+            }
+        }
+
+        // Adjust color brightness
+        function adjustColor(color, amount) {
+            const hex = color.replace('#', '');
+            const num = parseInt(hex, 16);
+            const r = Math.min(255, Math.max(0, (num >> 16) + amount));
+            const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
+            const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
+            return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+        }
+
+        // Add event listeners for live preview
+        function addPreviewListeners() {
+            const inputs = [
+                'description', 'organizationName', 'logoText',
+                'backgroundColorText', 'foregroundColorText', 'labelColorText',
+                'barcodeFormat', 'barcodeMessage'
+            ];
+
+            inputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updateLivePreview);
+                    element.addEventListener('change', updateLivePreview);
+                }
+            });
+
+            // Also add listener for color inputs
+            const colorInputs = ['backgroundColor', 'foregroundColor', 'labelColor'];
+            colorInputs.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', updateLivePreview);
+                }
+            });
+        }
+
+        // Cambiar entre tabs
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Actualizar tipo de pass
+        function updatePassType() {
+            const passType = document.getElementById('passType').value;
+            const transitTypeGroup = document.getElementById('transitTypeGroup');
+            const additionalInfoFieldsContainer = document.getElementById('additionalInfoFieldsContainer');
+
+            // Mostrar/ocultar transit type
+            transitTypeGroup.style.display = passType === 'boardingPass' ? 'block' : 'none';
+
+            // Mostrar/ocultar additional info fields (solo event ticket)
+            additionalInfoFieldsContainer.style.display = passType === 'eventTicket' ? 'block' : 'none';
+        }
+
+        // Actualizar texto de color
+        function updateColorText(colorInput) {
+            const textInput = document.getElementById(colorInput.id + 'Text');
+            textInput.value = colorInput.value;
+        }
+
+        // Agregar campo
+        function addField(containerId, presetData = null) {
+            const container = document.getElementById(containerId);
+            const fieldNumber = ++fieldCounter[containerId];
+
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'field-entry';
+            fieldDiv.id = `${containerId}_${fieldNumber}`;
+
+            const labelText = presetData?.label || `Campo ${fieldNumber}`;
+            const valueText = presetData?.value || 'Valor';
+            const keyText = presetData?.key || `field_${containerId}_${fieldNumber}`;
+
+            fieldDiv.innerHTML = `
+                <div class="field-header">
+                    <span class="field-number">${fieldNumber}</span>
+                    <button class="btn btn-danger" onclick="removeField('${containerId}', ${fieldNumber})">✕</button>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Key *</label>
+                        <input type="text" class="field-key" value="${keyText}" placeholder="identificador_unico">
+                    </div>
+                    <div class="form-group">
+                        <label>Label *</label>
+                        <input type="text" class="field-label" value="${labelText}" placeholder="Etiqueta">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Value *</label>
+                        <input type="text" class="field-value" value="${valueText}" placeholder="Valor del campo">
+                    </div>
+                    <div class="form-group">
+                        <label>Attributed Value</label>
+                        <input type="text" class="field-attributedValue" placeholder="Valor formateado">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Change Message</label>
+                        <input type="text" class="field-changeMessage" placeholder="Actualizado a %@">
+                    </div>
+                    <div class="form-group">
+                        <label>Data Detectors</label>
+                        <select class="field-dataDetectorTypes">
+                            <option value="">Ninguno</option>
+                            <option value="PKDataDetectorTypePhoneNumber">Teléfono</option>
+                            <option value="PKDataDetectorTypeLink">Link</option>
+                            <option value="PKDataDetectorTypeAddress">Dirección</option>
+                            <option value="PKDataDetectorTypeCalendarEvent">Evento</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(fieldDiv);
+
+            // Add event listeners to field inputs for live preview
+            const fieldInputs = fieldDiv.querySelectorAll('input, select');
+            fieldInputs.forEach(input => {
+                input.addEventListener('input', updateLivePreview);
+                input.addEventListener('change', updateLivePreview);
+            });
+
+            updateLivePreview();
+        }
+
+        // Remover campo
+        function removeField(containerId, fieldNumber) {
+            const fieldDiv = document.getElementById(`${containerId}_${fieldNumber}`);
+            if (fieldDiv) {
+                fieldDiv.remove();
+                updateLivePreview();
+            }
+        }
+
+        // Recopilar campos
+        function collectFields(containerId) {
+            const container = document.getElementById(containerId);
+            const fieldDivs = container.querySelectorAll('.field-entry');
+            const fields = [];
+
+            fieldDivs.forEach(fieldDiv => {
+                const field = {
+                    key: fieldDiv.querySelector('.field-key').value,
+                    label: fieldDiv.querySelector('.field-label').value,
+                    value: fieldDiv.querySelector('.field-value').value
+                };
+
+                const attributedValue = fieldDiv.querySelector('.field-attributedValue').value;
+                if (attributedValue) field.attributedValue = attributedValue;
+
+                const changeMessage = fieldDiv.querySelector('.field-changeMessage').value;
+                if (changeMessage) field.changeMessage = changeMessage;
+
+                const dataDetectorTypes = fieldDiv.querySelector('.field-dataDetectorTypes').value;
+                if (dataDetectorTypes) field.dataDetectorTypes = [dataDetectorTypes];
+
+                fields.push(field);
+            });
+
+            return fields;
+        }
+
+        // Construir objeto del pass
+        function buildPassData() {
+            const passType = document.getElementById('passType').value;
+
+            const data = {
+                type: passType,
+                description: document.getElementById('description').value || 'Mi Pass',
+                organizationName: document.getElementById('organizationName').value || 'Mi Organización',
+                logoText: document.getElementById('logoText').value || '',
+                backgroundColor: document.getElementById('backgroundColorText').value,
+                foregroundColor: document.getElementById('foregroundColorText').value,
+                labelColor: document.getElementById('labelColorText').value
+            };
+
+            // Agregar strip color si tiene valor
+            const stripColor = document.getElementById('stripColorText').value;
+            if (stripColor) data.stripColor = stripColor;
+
+            // Agregar campos
+            data.primaryFields = collectFields('primaryFields');
+            data.secondaryFields = collectFields('secondaryFields');
+            data.auxiliaryFields = collectFields('auxiliaryFields');
+            data.headerFields = collectFields('headerFields');
+            data.backFields = collectFields('backFields');
+
+            // Agregar additional info fields si es event ticket
+            if (passType === 'eventTicket') {
+                data.additionalInfoFields = collectFields('additionalInfoFields');
+            }
+
+            // Agregar transit type si es boarding pass
+            if (passType === 'boardingPass') {
+                data.transitType = document.getElementById('transitType').value;
+            }
+
+            // Agregar código de barras
+            data.barcode = {
+                format: document.getElementById('barcodeFormat').value,
+                message: document.getElementById('barcodeMessage').value || 'https://example.com/pass/12345',
+                altText: document.getElementById('barcodeAltText').value
+            };
+
+            // Agregar fecha de expiración si tiene valor
+            const expirationDate = document.getElementById('expirationDate').value;
+            if (expirationDate) {
+                data.expirationDate = new Date(expirationDate).toISOString();
+            }
+
+            // Agregar fecha relevante si tiene valor
+            const relevantDate = document.getElementById('relevantDate').value;
+            if (relevantDate) {
+                data.relevantDate = new Date(relevantDate).toISOString();
+            }
+
+            // Agregar grouping identifier si tiene valor
+            const groupingIdentifier = document.getElementById('groupingIdentifier').value;
+            if (groupingIdentifier) {
+                data.groupingIdentifier = groupingIdentifier;
+            }
+
+            // Agregar imágenes
+            if (Object.keys(uploadedImages).length > 0) {
+                data.images = {};
+                if (uploadedImages.iconImage) data.images.icon = uploadedImages.iconImage;
+                if (uploadedImages.icon2xImage) data.images.icon2x = uploadedImages.icon2xImage;
+                if (uploadedImages.logoImage) data.images.logo = uploadedImages.logoImage;
+                if (uploadedImages.logo2xImage) data.images.logo2x = uploadedImages.logo2xImage;
+                if (uploadedImages.backgroundImage) data.images.background = uploadedImages.backgroundImage;
+                if (uploadedImages.background2xImage) data.images.background2x = uploadedImages.background2xImage;
+                if (uploadedImages.thumbnailImage) data.images.thumbnail = uploadedImages.thumbnailImage;
+                if (uploadedImages.thumbnail2xImage) data.images.thumbnail2x = uploadedImages.thumbnail2xImage;
+                if (uploadedImages.stripImage) data.images.strip = uploadedImages.stripImage;
+                if (uploadedImages.strip2xImage) data.images.strip2x = uploadedImages.strip2xImage;
+            }
+
+            return data;
+        }
+
+        // Previsualizar JSON
+        function previewJSON() {
+            const data = buildPassData();
+            const jsonPreview = document.getElementById('jsonPreview');
+            const previewDiv = document.getElementById('preview');
+
+            jsonPreview.textContent = JSON.stringify(data, null, 2);
+            previewDiv.style.display = 'block';
+        }
+
+        // Generar pass
+        async function generatePass() {
+            const statusEl = document.getElementById('status');
+            const data = buildPassData();
+
+            try {
+                statusEl.style.display = 'block';
+                statusEl.className = 'status loading';
+                statusEl.textContent = '⏳ Generando pass...';
+
+                const response = await fetch('/pass', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const fileName = data.type.toLowerCase() + '-pass.pkpass';
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                statusEl.className = 'status success';
+                statusEl.innerHTML = '✅ <strong>¡Pass generado exitosamente!</strong><br><br>Abre el archivo .pkpass en tu dispositivo iOS para añadirlo a Apple Wallet.';
+            } catch (error) {
+                console.error('Error:', error);
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `❌ <strong>Error:</strong> ${error.message}<br><br>Asegúrate de que el servidor esté corriendo con certificados válidos.`;
+            }
+        }
+
+        // Resetear formulario
+        function resetForm() {
+            // Resetear campos básicos
+            document.getElementById('description').value = '';
+            document.getElementById('organizationName').value = '';
+            document.getElementById('logoText').value = '';
+            document.getElementById('barcodeMessage').value = '';
+            document.getElementById('barcodeAltText').value = '';
+            document.getElementById('expirationDate').value = '';
+            document.getElementById('relevantDate').value = '';
+            document.getElementById('groupingIdentifier').value = '';
+
+            // Resetear colores a valores por defecto
+            document.getElementById('backgroundColor').value = '#1a1a2e';
+            document.getElementById('backgroundColorText').value = '#1a1a2e';
+            document.getElementById('foregroundColor').value = '#ffffff';
+            document.getElementById('foregroundColorText').value = '#ffffff';
+            document.getElementById('labelColor').value = '#e94560';
+            document.getElementById('labelColorText').value = '#e94560';
+            document.getElementById('stripColor').value = '#667eea';
+            document.getElementById('stripColorText').value = '#667eea';
+
+            // Resetear imágenes
+            document.getElementById('iconImage').value = '';
+            document.getElementById('icon2xImage').value = '';
+            document.getElementById('logoImage').value = '';
+            document.getElementById('logo2xImage').value = '';
+            document.getElementById('backgroundImage').value = '';
+            document.getElementById('background2xImage').value = '';
+            document.getElementById('thumbnailImage').value = '';
+            document.getElementById('thumbnail2xImage').value = '';
+            document.getElementById('stripImage').value = '';
+            document.getElementById('strip2xImage').value = '';
+            uploadedImages = {};
+
+            // Limpiar campos existentes
+            Object.keys(fieldCounter).forEach(key => {
+                fieldCounter[key] = 0;
+                document.getElementById(key).innerHTML = '';
+            });
+
+            // Inicializar con campos de ejemplo
+            initializeExampleFields();
+
+            // Ocultar preview
+            document.getElementById('preview').style.display = 'none';
+            document.getElementById('status').style.display = 'none';
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePassType();
+            initializeExampleFields();
+            addPreviewListeners();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.com.xpectros.memberships",
+  "teamIdentifier": "428JSB6QUW",
+  "organizationName": "Xpectros",
+  "description": "Xpectros Membership",
+  "logoText": "Xpectros",
+  "backgroundColor": "#1a1a2e",
+  "foregroundColor": "#ffffff",
+  "labelColor": "#e94560",
+  "generic": {}
+}

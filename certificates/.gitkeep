@@ -1,0 +1,7 @@
+# Place your Apple Developer certificates here:
+
+1. pass.cer - Your Pass Type Certificate (converted to PEM)
+2. pass.key - Your private key
+3. AppleWWDRCA.pem - Apple Worldwide Developer Relations CA
+
+See README.md for instructions on obtaining and converting these certificates.
