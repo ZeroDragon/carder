@@ -10,7 +10,25 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const passGenerator = new PassGenerator();
 
-app.use(express.json());
+function truncateImageBase64(data) {
+  if (!data || typeof data !== 'object') {
+    return data;
+  }
+
+  const result = JSON.parse(JSON.stringify(data));
+
+  if (result.images) {
+    Object.keys(result.images).forEach(key => {
+      if (typeof result.images[key] === 'string' && result.images[key].startsWith('data:image')) {
+        result.images[key] = result.images[key].substring(0, 50) + '... [truncated]';
+      }
+    });
+  }
+
+  return result;
+}
+
+app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.get('/', (req, res) => {
@@ -38,7 +56,7 @@ app.post('/pass', async (req, res) => {
       return res.status(400).json({ error: 'Request body is required' });
     }
 
-    console.log('Generating pass with data:', passData);
+    console.log('Generating pass with data:', truncateImageBase64(passData));
 
     // Generate the pass
     const passBuffer = await passGenerator.generatePass(passData);
@@ -67,7 +85,7 @@ app.post('/pass/json', async (req, res) => {
       return res.status(400).json({ error: 'Request body is required' });
     }
 
-    console.log('Generating pass with data:', passData);
+    console.log('Generating pass with data:', truncateImageBase64(passData));
 
     // Generate the pass
     const passBuffer = await passGenerator.generatePass(passData);

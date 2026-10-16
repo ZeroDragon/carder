@@ -61,12 +61,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+
         .section {
             margin-bottom: 30px;
         }
@@ -221,26 +216,6 @@
             border-left: 4px solid #ffc107;
             margin-bottom: 20px;
         }
-        .preview {
-            background: #f5f5f7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .preview h3 {
-            margin-top: 0;
-        }
-        .json-preview {
-            background: #1d1d1f;
-            color: #00ff00;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
         .documentation {
             background: #f8f9fa;
             padding: 20px;
@@ -289,196 +264,16 @@
         }
         .generator-layout {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: 1fr;
             gap: 30px;
         }
         .generator-left {
             min-width: 0;
         }
-        .generator-right {
-            position: sticky;
-            top: 20px;
-            height: fit-content;
-        }
-
-        /* Pass Preview Styles */
-        .pass-preview {
-            background: #f5f5f7;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .pass-preview h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-        }
-
-        .pass-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 250px;
-            max-width: 350px;
-            margin: 0 auto;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .pass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        }
-        .pass-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-        .pass-logo {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            color: rgba(255,255,255,0.8);
-        }
-        .pass-logo-text {
-            flex: 1;
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            letter-spacing: 0.5px;
-        }
-        .pass-primary {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .pass-primary-label {
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .pass-primary-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .pass-secondary {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .pass-secondary-field {
-            text-align: center;
-        }
-        .pass-secondary-label {
-            font-size: 10px;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .pass-secondary-value {
-            font-size: 16px;
-            font-weight: 500;
-            color: #ffffff;
-        }
-        .pass-barcode {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .pass-barcode-placeholder {
-            width: 150px;
-            height: 150px;
-            background: white;
-            margin: 0 auto;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .pass-footer {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 11px;
-            color: rgba(255,255,255,0.5);
-        }
-        .pass-front {
-            display: block;
-        }
-        .pass-back {
-            display: block;
-        }
-        .pass-back-section {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .pass-back-section:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-        .pass-back-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .pass-back-field {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-        .pass-back-label {
-            color: rgba(255,255,255,0.6);
-            flex: 1;
-        }
-        .pass-back-value {
-            color: #ffffff;
-            font-weight: 500;
-            text-align: right;
-            flex: 1;
-        }
-        .pass-back-empty {
-            text-align: center;
-            color: rgba(255,255,255,0.5);
-            font-size: 13px;
-            padding: 20px 0;
-        }
-        .pass-strip-preview {
-            width: 100%;
-            height: 60px;
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-        }
 
         @media (max-width: 1024px) {
             .generator-layout {
                 grid-template-columns: 1fr;
-            }
-            .generator-right {
-                position: static;
             }
         }
         @media (max-width: 768px) {
@@ -945,68 +740,13 @@
 
                 <div class="actions">
                     <button class="btn btn-primary" @click="generatePass">🚀 Generar Pass</button>
-                    <button class="btn btn-success" @click="previewJSON">👁️ Previsualizar JSON</button>
+                    <button class="btn btn-success" @click="exportToJSON">📥 Exportar JSON</button>
+                    <button class="btn" @click="triggerImportJSON">📤 Importar JSON</button>
+                    <input type="file" id="importJSONInput" accept=".json" @change="importFromJSON" style="display: none;">
                     <button class="btn" @click="resetForm">🔄 Resetear Formulario</button>
                 </div>
 
                 <div id="status" class="status"></div>
-
-                <div id="preview" class="preview" style="display: none;">
-                    <h3>📄 JSON del Pass</h3>
-                    <div id="jsonPreview" class="json-preview"></div>
-                </div>
-            </div>
-
-            <div class="generator-right">
-                <div class="pass-preview">
-                    <h3>👁️ Live Preview - Frente</h3>
-                    <div class="pass-card" id="passCardFront" :style="{ background: backgroundGradient }">
-                        <!-- Front View -->
-                        <div class="pass-front" id="passFront">
-                            <div v-if="hasStripImage" class="pass-strip-preview" :style="{ backgroundImage: 'url(' + stripImageUrl + ')', backgroundSize: 'cover', backgroundPosition: 'center' }"></div>
-                        <div class="pass-header">
-                            <div class="pass-logo" id="previewLogo" :style="hasLogoImage ? { backgroundImage: 'url(' + logoImageUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : {}">{{ hasLogoImage ? '' : '🎫' }}</div>
-                            <div class="pass-logo-text" id="previewLogoText" :style="{ color: foregroundColor }">{{ logoText || 'LOGO' }}</div>
-                        </div>
-                        <div class="pass-primary">
-                            <div class="pass-primary-label" id="previewPrimaryLabel" :style="{ color: adjustedLabelColor }">{{ primaryFields[0]?.label || 'TÍTULO' }}</div>
-                            <div class="pass-primary-value" id="previewPrimaryValue" :style="{ color: foregroundColor }">{{ primaryFields[0]?.value || 'Ejemplo de Pass' }}</div>
-                        </div>
-                        <div class="pass-secondary">
-                            <div v-for="(field, index) in secondaryFields.slice(0, 2)" :key="field.id" class="pass-secondary-field">
-                                <div class="pass-secondary-label" :style="{ color: adjustedLabelColor }">{{ field.label || (index === 0 ? 'Secundario' : 'Estado') }}</div>
-                                <div class="pass-secondary-value" :style="{ color: foregroundColor }">{{ field.value || (index === 0 ? 'Info' : 'Activo') }}</div>
-                            </div>
-                        </div>
-                        <div class="pass-barcode">
-                            <div class="pass-barcode-placeholder" id="previewBarcode">{{ displayBarcodeText }}</div>
-                        </div>
-                        <div class="pass-footer" id="previewFooter" :style="{ color: foregroundColor }">{{ displayOrganizationName }}</div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div class="pass-preview" style="margin-top: 20px;">
-                    <h3>👁️ Live Preview - Atrás</h3>
-                    <div class="pass-card" id="passCardBack" :style="{ background: backgroundGradient }">
-                        <!-- Back View -->
-                        <div class="pass-back" id="passBack">
-                            <div class="pass-header">
-                                <div class="pass-logo" id="previewBackLogo" :style="hasLogoImage ? { backgroundImage: 'url(' + logoImageUrl + ')', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' } : {}">{{ hasLogoImage ? '' : '🎫' }}</div>
-                                <div class="pass-logo-text" id="previewBackLogoText" :style="{ color: foregroundColor }">{{ logoText || 'LOGO' }}</div>
-                            </div>
-                            <div id="previewBackFields">
-                                <div v-if="backFields.length === 0" class="pass-back-empty" :style="{ color: adjustedLabelColor }">
-                                    Agrega campos "Back Fields" para ver información aquí
-                                </div>
-                                <div v-for="field in backFields" :key="field.id" class="pass-back-field">
-                                    <div class="pass-back-label" :style="{ color: adjustedLabelColor }">{{ field.label || 'Campo' }}</div>
-                                    <div class="pass-back-value" :style="{ color: foregroundColor }">{{ field.value || 'Valor' }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -1347,53 +1087,14 @@ const response = await fetch('http://localhost:3000/pass', {
                 };
             },
             computed: {
-                backgroundGradient() {
-                    return `linear-gradient(135deg, ${this.backgroundColor} 0%, ${this.adjustColor(this.backgroundColor, -20)} 100%)`;
-                },
-                adjustedLabelColor() {
-                    return this.adjustColor(this.foregroundColor, -40);
-                },
                 showTransitType() {
                     return this.passType === 'boardingPass';
                 },
                 showAdditionalInfoFields() {
                     return this.passType === 'eventTicket';
-                },
-                displayBarcodeText() {
-                    if (!this.barcodeMessage) return 'QR CODE';
-                    switch (this.barcodeFormat) {
-                        case 'PKBarcodeFormatQR': return 'QR CODE';
-                        case 'PKBarcodeFormatPDF417': return 'PDF417';
-                        case 'PKBarcodeFormatAztec': return 'AZTEC';
-                        case 'PKBarcodeFormatCode128': return 'CODE 128';
-                        default: return 'QR CODE';
-                    }
-                },
-                displayOrganizationName() {
-                    return this.organizationName || 'Mi Organización';
-                },
-                hasLogoImage() {
-                    return !!this.uploadedImages.logo2xImage;
-                },
-                hasStripImage() {
-                    return !!this.uploadedImages.strip2xImage;
-                },
-                logoImageUrl() {
-                    return this.uploadedImages.logo2xImage || '';
-                },
-                stripImageUrl() {
-                    return this.uploadedImages.strip2xImage || '';
                 }
             },
             methods: {
-                adjustColor(color, amount) {
-                    const hex = color.replace('#', '');
-                    const num = parseInt(hex, 16);
-                    const r = Math.min(255, Math.max(0, (num >> 16) + amount));
-                    const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amount));
-                    const b = Math.min(255, Math.max(0, (num & 0x0000FF) + amount));
-                    return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
-                },
                 addField(type, presetData = null) {
                     const fieldNumber = ++this.fieldCounter[type];
                     const field = {
@@ -1460,14 +1161,6 @@ const response = await fetch('http://localhost:3000/pass', {
                         this.showStatus('error', `❌ <strong>Error:</strong> ${error.message}<br><br>Asegúrate de que el servidor esté corriendo con certificados válidos.`);
                     });
                 },
-                previewJSON() {
-                    const data = this.buildPassData();
-                    const jsonPreview = document.getElementById('jsonPreview');
-                    const previewDiv = document.getElementById('preview');
-
-                    jsonPreview.textContent = JSON.stringify(data, null, 2);
-                    previewDiv.style.display = 'block';
-                },
                 resetForm() {
                     this.description = '';
                     this.organizationName = '';
@@ -1502,10 +1195,100 @@ const response = await fetch('http://localhost:3000/pass', {
                     document.getElementById('background2xImage').value = '';
                     document.getElementById('thumbnail2xImage').value = '';
                     document.getElementById('strip2xImage').value = '';
-                    document.getElementById('preview').style.display = 'none';
                     document.getElementById('status').style.display = 'none';
 
                     this.initializeExampleFields();
+                },
+                exportToJSON() {
+                    const exportData = {
+                        passType: this.passType,
+                        transitType: this.transitType,
+                        description: this.description,
+                        organizationName: this.organizationName,
+                        logoText: this.logoText,
+                        backgroundColor: this.backgroundColor,
+                        foregroundColor: this.foregroundColor,
+                        labelColor: this.labelColor,
+                        stripColor: this.stripColor,
+                        barcodeFormat: this.barcodeFormat,
+                        barcodeMessage: this.barcodeMessage,
+                        barcodeAltText: this.barcodeAltText,
+                        expirationDate: this.expirationDate,
+                        relevantDate: this.relevantDate,
+                        groupingIdentifier: this.groupingIdentifier,
+                        primaryFields: this.primaryFields,
+                        secondaryFields: this.secondaryFields,
+                        auxiliaryFields: this.auxiliaryFields,
+                        headerFields: this.headerFields,
+                        backFields: this.backFields,
+                        additionalInfoFields: this.additionalInfoFields,
+                        fieldCounter: this.fieldCounter
+                    };
+
+                    const jsonStr = JSON.stringify(exportData, null, 2);
+                    const blob = new Blob([jsonStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `pass-${Date.now()}.json`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    this.showStatus('success', '✅ <strong>Exportado exitosamente:</strong> El JSON ha sido descargado.');
+                },
+                triggerImportJSON() {
+                    document.getElementById('importJSONInput').click();
+                },
+                importFromJSON(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const importData = JSON.parse(e.target.result);
+
+                            this.passType = importData.passType || 'generic';
+                            this.transitType = importData.transitType || '';
+                            this.description = importData.description || '';
+                            this.organizationName = importData.organizationName || '';
+                            this.logoText = importData.logoText || '';
+                            this.backgroundColor = importData.backgroundColor || '#1a1a2e';
+                            this.foregroundColor = importData.foregroundColor || '#ffffff';
+                            this.labelColor = importData.labelColor || '#e94560';
+                            this.stripColor = importData.stripColor || '#667eea';
+                            this.barcodeFormat = importData.barcodeFormat || 'PKBarcodeFormatQR';
+                            this.barcodeMessage = importData.barcodeMessage || '';
+                            this.barcodeAltText = importData.barcodeAltText || '';
+                            this.expirationDate = importData.expirationDate || '';
+                            this.relevantDate = importData.relevantDate || '';
+                            this.groupingIdentifier = importData.groupingIdentifier || '';
+                            this.primaryFields = importData.primaryFields || [];
+                            this.secondaryFields = importData.secondaryFields || [];
+                            this.auxiliaryFields = importData.auxiliaryFields || [];
+                            this.headerFields = importData.headerFields || [];
+                            this.backFields = importData.backFields || [];
+                            this.additionalInfoFields = importData.additionalInfoFields || [];
+                            this.fieldCounter = importData.fieldCounter || {
+                                primaryFields: 0,
+                                secondaryFields: 0,
+                                auxiliaryFields: 0,
+                                headerFields: 0,
+                                backFields: 0,
+                                additionalInfoFields: 0
+                            };
+
+                            document.getElementById('status').style.display = 'none';
+                            document.getElementById('importJSONInput').value = '';
+
+                            this.showStatus('success', '✅ <strong>Importado exitosamente:</strong> El formulario ha sido cargado. Las imágenes necesitan ser cargadas nuevamente.');
+                        } catch (error) {
+                            this.showStatus('error', `❌ <strong>Error al importar:</strong> ${error.message}`);
+                        }
+                    };
+                    reader.readAsText(file);
                 },
                 showStatus(type, message) {
                     const statusEl = document.getElementById('status');
